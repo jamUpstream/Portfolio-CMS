@@ -1,6 +1,13 @@
 import { supabase } from './supabase';
 
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:4000/api/v1';
+function normalizeApiUrl(value) {
+  const url = (value || 'http://localhost:4000/api/v1').replace(/\/+$/, '');
+  if (url.endsWith('/api/v1')) return url;
+  if (url.endsWith('/api')) return `${url}/v1`;
+  return `${url}/api/v1`;
+}
+
+const API_URL = normalizeApiUrl(import.meta.env.VITE_API_URL);
 
 async function getToken() {
   const { data } = await supabase.auth.getSession();

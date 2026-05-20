@@ -54,7 +54,7 @@ There is intentionally no registration page. The login screen is hidden from sit
 SUPABASE_URL=your_supabase_url
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 PORT=4000
-CLIENT_ORIGIN=http://localhost:5173
+CLIENT_ORIGIN=http://localhost:5173,https://your-vercel-app.vercel.app
 GROQ_API_KEY=your_groq_api_key
 GROQ_MODEL=llama-3.3-70b-versatile
 ```
@@ -133,7 +133,8 @@ Backend:
 
 - Deploy `server/` to Railway or Render.
 - Set `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `PORT`, `CLIENT_ORIGIN`, and `GROQ_API_KEY`.
-- Set `CLIENT_ORIGIN` to the deployed Vercel URL.
+- Set `CLIENT_ORIGIN` to the deployed Vercel URL. Multiple origins can be comma-separated.
+- Set `VITE_API_URL` in Vercel to the backend base URL or API URL, for example `https://your-render-service.onrender.com/api/v1`.
 
 Supabase:
 

@@ -8,14 +8,33 @@ import contentRoutes from './routes/content.js';
 
 const app = express();
 const port = Number(process.env.PORT ?? 4000);
-const clientOrigin = process.env.CLIENT_ORIGIN ?? 'http://localhost:5173';
+const clientOrigins = (process.env.CLIENT_ORIGIN ?? 'http://localhost:5173')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+function isAllowedOrigin(origin) {
+  if (!origin) return true;
+  if (clientOrigins.includes(origin)) return true;
+  if (/^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(origin)) return true;
+  return false;
+}
 
 app.use(helmet());
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'https://james-tercenio-portfolio-dev.vercel.app'
-  ],
+  origin(origin, callback) {
+    if (isAllowedOrigin(origin)) return callback(null, true);
+    return callback(new Error(`CORS blocked origin: ${origin}`));
+  },
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS']
+}));
+app.options('*', cors({
+  origin(origin, callback) {
+    if (isAllowedOrigin(origin)) return callback(null, true);
+    return callback(new Error(`CORS blocked origin: ${origin}`));
+  },
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization'],
   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS']
@@ -25,6 +44,7 @@ app.use(morgan('dev'));
 
 app.get('/health', (_req, res) => res.json({ ok: true }));
 app.use('/api/v1', contentRoutes);
+app.use('/api', contentRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ error: `Route not found: ${req.method} ${req.path}` });
