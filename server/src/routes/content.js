@@ -110,6 +110,23 @@ function cleanPayload(payload) {
   );
 }
 
+function slugify(value) {
+  return String(value || '')
+    .toLowerCase()
+    .trim()
+    .replace(/['"]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function cleanResourcePayload(resource, payload) {
+  const cleaned = cleanPayload(payload);
+  if (resource === 'projects' && !cleaned.slug && cleaned.title) {
+    return { ...cleaned, slug: slugify(cleaned.title) };
+  }
+  return cleaned;
+}
+
 function normalizeDateValue(value) {
   if (value == null) return null;
 
@@ -369,7 +386,7 @@ router.post('/:resource', authMiddleware, async (req, res, next) => {
   try {
     const config = resources[req.params.resource];
     if (!config || !protectedResources.includes(req.params.resource)) return res.status(404).json({ error: 'Unknown resource' });
-    const { data, error } = await supabaseAdmin.from(config.table).insert(cleanPayload(req.body)).select('*').single();
+    const { data, error } = await supabaseAdmin.from(config.table).insert(cleanResourcePayload(req.params.resource, req.body)).select('*').single();
     if (error) throw error;
     res.status(201).json(data);
   } catch (error) {
@@ -383,8 +400,8 @@ router.patch('/:resource/:id', authMiddleware, async (req, res, next) => {
     if (!config) return res.status(404).json({ error: 'Unknown resource' });
     idSchema.parse(req.params.id);
     const payload = ['projects'].includes(req.params.resource)
-      ? { ...cleanPayload(req.body), updated_at: new Date().toISOString() }
-      : cleanPayload(req.body);
+      ? { ...cleanResourcePayload(req.params.resource, req.body), updated_at: new Date().toISOString() }
+      : cleanResourcePayload(req.params.resource, req.body);
     const { data, error } = await supabaseAdmin.from(config.table).update(payload).eq('id', req.params.id).select('*').single();
     if (error) throw error;
     res.json(data);

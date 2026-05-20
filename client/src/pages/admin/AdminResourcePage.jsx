@@ -11,6 +11,15 @@ import UploadField from '../../components/UploadField';
 import Skeleton from '../../components/Skeleton';
 import ConfirmDialog from '../../components/ConfirmDialog';
 
+function slugify(value) {
+  return String(value || '')
+    .toLowerCase()
+    .trim()
+    .replace(/['"]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 export default function AdminResourcePage({ resourceKey }) {
   const config = resources[resourceKey];
   const visibleColumns = useMemo(() => config.columns.filter((column) => column !== 'sort_order'), [config]);
@@ -22,13 +31,27 @@ export default function AdminResourcePage({ resourceKey }) {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [bulkDelete, setBulkDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
+  const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
   const lastError = useRef('');
   const defaults = useMemo(() => Object.fromEntries(Object.keys(config.schema.shape).map((key) => [key, key === 'status' ? 'draft' : ''])), [config]);
 
-  const { register, handleSubmit, reset, control, formState: { errors } } = useForm({
+  const { register, handleSubmit, reset, control, watch, setValue, formState: { errors } } = useForm({
     resolver: zodResolver(config.schema),
     defaultValues: defaults
   });
+
+  const watchedTitle = watch('title');
+  const watchedSlug = watch('slug');
+
+  useEffect(() => {
+    if (resourceKey !== 'projects' || slugManuallyEdited) return;
+    if (editing && watchedSlug) return;
+
+    const nextSlug = slugify(watchedTitle);
+    if (nextSlug !== watchedSlug) {
+      setValue('slug', nextSlug, { shouldDirty: true, shouldValidate: true });
+    }
+  }, [editing, resourceKey, setValue, slugManuallyEdited, watchedSlug, watchedTitle]);
 
   useEffect(() => {
     setLoading(true);
@@ -37,6 +60,7 @@ export default function AdminResourcePage({ resourceKey }) {
       setLoading(false);
       setEditing(null);
       setFormOpen(false);
+      setSlugManuallyEdited(false);
       reset(defaults);
     }).catch((error) => {
       if (lastError.current !== error.message) {
@@ -49,12 +73,14 @@ export default function AdminResourcePage({ resourceKey }) {
 
   function edit(row) {
     setEditing(row);
+    setSlugManuallyEdited(Boolean(row?.slug));
     reset(toFormValues(row));
     setFormOpen(true);
   }
 
   function createNew() {
     setEditing(null);
+    setSlugManuallyEdited(false);
     reset(defaults);
     setFormOpen(true);
   }
@@ -62,6 +88,7 @@ export default function AdminResourcePage({ resourceKey }) {
   function closeForm() {
     setFormOpen(false);
     setEditing(null);
+    setSlugManuallyEdited(false);
     reset(defaults);
   }
 
@@ -172,10 +199,22 @@ export default function AdminResourcePage({ resourceKey }) {
                     </label>
                   );
                 }
+                const inputRegistration = register(name);
+                const isProjectSlug = resourceKey === 'projects' && name === 'slug';
                 return (
                   <label className="field" key={name}>
                     <span>{name.replaceAll('_', ' ')}</span>
-                    <input className="input" type="text" placeholder={name.endsWith('_date') ? '2024, 2024-08, 2024-08-17, or Present' : ''} {...register(name)} />
+                    <input
+                      className="input"
+                      type="text"
+                      placeholder={name.endsWith('_date') ? '2024, 2024-08, 2024-08-17, or Present' : ''}
+                      {...inputRegistration}
+                      onChange={(event) => {
+                        inputRegistration.onChange(event);
+                        if (isProjectSlug) setSlugManuallyEdited(Boolean(event.target.value.trim()));
+                      }}
+                    />
+                    {isProjectSlug ? <small className="field-hint">Auto-generated from the project title unless you edit it.</small> : null}
                     {name.endsWith('_date') ? <small className="field-hint">Use a year, month, full date, or leave blank / type Present for ongoing.</small> : null}
                     {errors[name] ? <small className="text-red-600">{errors[name].message}</small> : null}
                   </label>
