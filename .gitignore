@@ -1,0 +1,47 @@
+# Dependencies
+node_modules/
+*/node_modules/
+
+# Build output
+dist/
+build/
+client/dist/
+server/dist/
+.vite/
+
+# Environment files
+.env
+.env.*
+!.env.example
+client/.env
+client/.env.*
+server/.env
+server/.env.*
+
+# Vercel / deployment
+.vercel/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Tests and local tooling
+coverage/
+test-results/
+playwright-report/
+.playwright/
+
+# Local generated media/temp files
+.tmp_video_frames/
+.tmp_video_frames_dense/
+*.mp4
+*.webm
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
