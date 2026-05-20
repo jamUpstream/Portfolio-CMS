@@ -12,7 +12,10 @@ const clientOrigin = process.env.CLIENT_ORIGIN ?? 'http://localhost:5173';
 
 app.use(helmet());
 app.use(cors({
-  origin: clientOrigin,
+  origin: [
+    'http://localhost:5173',
+    'https://james-tercenio-portfolio-dev.vercel.app'
+  ],
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization'],
   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS']
