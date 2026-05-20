@@ -8,8 +8,8 @@ import ConfirmDialog from '../components/ConfirmDialog';
 export default function Login() {
   const { signIn, session, signOut } = useAuth();
   const navigate = useNavigate();
-  const [email, setEmail] = useState('admin@panel.com');
-  const [password, setPassword] = useState('admin123panel');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [logoutOpen, setLogoutOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
