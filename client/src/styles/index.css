@@ -2615,6 +2615,41 @@ select.input,
   padding: 1rem 0 5rem;
 }
 
+.portfolio-loading-hero {
+  min-height: calc(100dvh - 6rem);
+  display: grid;
+  align-content: center;
+  gap: 1.5rem;
+  color: var(--color-ink);
+}
+
+.portfolio-loading-hero p {
+  margin: 0;
+  font-family: var(--font-heading), serif;
+  font-size: clamp(2.5rem, 9vw, 7rem);
+  line-height: 0.95;
+}
+
+.portfolio-loading-hero [aria-label="Loading"] {
+  width: min(36rem, 100%);
+  color: var(--color-ink);
+  opacity: 0.9;
+}
+
+.portfolio-refreshing {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 30;
+  border: 1px solid color-mix(in srgb, var(--color-ink) 12%, transparent);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: color-mix(in srgb, var(--color-ink) 72%, transparent);
+  padding: 0.55rem 0.85rem;
+  font-size: 0.8rem;
+  box-shadow: 0 14px 40px rgb(0 0 0 / 10%);
+}
+
 .portfolio-page {
   position: relative;
   min-height: 100dvh;

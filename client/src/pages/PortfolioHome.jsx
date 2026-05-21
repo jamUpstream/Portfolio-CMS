@@ -20,7 +20,36 @@ const endpointMap = {
   settings: '/site-settings'
 };
 
+const portfolioCacheKey = 'portfolio-public-cache-v1';
 const defaultSectionOrder = ['about', 'services', 'projects', 'experience', 'education', 'skills', 'certificates', 'testimonials', 'contact'];
+const emptyPortfolioData = {
+  profile: null,
+  projects: [],
+  experience: [],
+  education: [],
+  certificates: [],
+  skills: [],
+  services: [],
+  testimonials: [],
+  socials: [],
+  settings: {}
+};
+
+function readCachedPortfolioData() {
+  try {
+    return JSON.parse(localStorage.getItem(portfolioCacheKey) || 'null');
+  } catch {
+    return null;
+  }
+}
+
+function cachePortfolioData(payload) {
+  try {
+    localStorage.setItem(portfolioCacheKey, JSON.stringify(payload));
+  } catch {
+    // Ignore storage limits or privacy-mode failures; cache is only a speed boost.
+  }
+}
 
 function normalizeSectionOrder(value) {
   let parsed = [];
@@ -92,17 +121,34 @@ function useReveal() {
 }
 
 export default function PortfolioHome() {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState(() => readCachedPortfolioData());
+  const [loading, setLoading] = useState(() => !readCachedPortfolioData());
   const [showBackToTop, setShowBackToTop] = useState(false);
   const { mode, toggleMode } = useTheme();
   useReveal();
 
   useEffect(() => {
-    Promise.all(Object.entries(endpointMap).map(([key, path]) => api.get(path).then((value) => [key, value]))).then((entries) => {
-      const next = Object.fromEntries(entries);
+    let cancelled = false;
+
+    Promise.allSettled(Object.entries(endpointMap).map(([key, path]) => api.get(path).then((value) => [key, value]))).then((results) => {
+      if (cancelled) return;
+
+      const fulfilled = results
+        .filter((result) => result.status === 'fulfilled')
+        .map((result) => result.value);
+      const next = { ...emptyPortfolioData, ...Object.fromEntries(fulfilled) };
+
       applySettings(next.settings, mode);
       setData(next);
+      setLoading(false);
+      cachePortfolioData(next);
+    }).catch(() => {
+      if (!cancelled) setLoading(false);
     });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -127,7 +173,7 @@ export default function PortfolioHome() {
     }, {});
   }, [data]);
 
-  if (!data) return <main className="portfolio-shell"><Skeleton lines={10} /></main>;
+  if (!data) return <PortfolioLoading mode={mode} />;
 
   const profile = data.profile ?? {};
   const heroClasses = [
@@ -208,6 +254,7 @@ export default function PortfolioHome() {
         </div>
       </header>
       <main className="portfolio-shell">
+        {loading ? <div className="portfolio-refreshing" aria-live="polite">Refreshing portfolio...</div> : null}
         <section id="top" className={heroClasses}>
           <div className="hero-copy">
             <h1>{profile.name || 'Your Name'}</h1>
@@ -227,6 +274,30 @@ export default function PortfolioHome() {
       <a className={`back-to-top ${showBackToTop ? 'is-visible' : ''}`} href="#top" aria-label="Back to top" aria-hidden={!showBackToTop} tabIndex={showBackToTop ? 0 : -1}>
         <ArrowUp className="h-4 w-4" />
       </a>
+    </div>
+  );
+}
+
+function PortfolioLoading({ mode }) {
+  const loadingSettings = parseSettings({}, mode);
+
+  useEffect(() => {
+    applySettings({}, mode);
+  }, [mode]);
+
+  return (
+    <div className={`portfolio-page portfolio-template-${loadingSettings.portfolioTemplate} portfolio-style-${loadingSettings.visualStyle} portfolio-bg-effect-${loadingSettings.backgroundEffect}`}>
+      <header className="site-nav">
+        <div className="site-nav-inner">
+          <span className="font-heading text-2xl">Portfolio</span>
+        </div>
+      </header>
+      <main className="portfolio-shell">
+        <section className="portfolio-loading-hero" aria-live="polite" aria-busy="true">
+          <p>Loading portfolio</p>
+          <Skeleton lines={6} />
+        </section>
+      </main>
     </div>
   );
 }
