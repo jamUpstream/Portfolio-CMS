@@ -71,7 +71,12 @@ const portfolioTemplates = [
   ['terminal', 'Terminal mono'],
   ['luxe', 'Luxury editorial'],
   ['neon', 'Neon tech'],
-  ['cards', 'Card deck']
+  ['cards', 'Card deck'],
+  ['blueprint', 'Blueprint grid'],
+  ['bento', 'Bento systems'],
+  ['casefile', 'Case file'],
+  ['monograph', 'Monograph'],
+  ['signal', 'Signal lab']
 ];
 const visualStyles = [
   ['default', 'Default'],

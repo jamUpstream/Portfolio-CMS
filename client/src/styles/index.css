@@ -3697,6 +3697,178 @@ select.input,
   padding: 1.25rem;
 }
 
+.portfolio-template-blueprint .portfolio-shell {
+  width: min(1240px, calc(100% - 32px));
+}
+
+.portfolio-template-blueprint .hero,
+.portfolio-template-blueprint .section {
+  border: 1px solid color-mix(in srgb, var(--color-ink) 28%, transparent);
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--color-ink) 8%, transparent) 1px, transparent 1px),
+    linear-gradient(0deg, color-mix(in srgb, var(--color-ink) 8%, transparent) 1px, transparent 1px),
+    color-mix(in srgb, var(--color-surface) 82%, transparent);
+  background-size: 36px 36px;
+  padding-inline: clamp(1rem, 4vw, 3rem);
+}
+
+.portfolio-template-blueprint .hero h1,
+.portfolio-template-blueprint .section h2 {
+  font-family: "IBM Plex Mono", "JetBrains Mono", monospace;
+  text-transform: uppercase;
+}
+
+.portfolio-template-blueprint .content-card,
+.portfolio-template-blueprint .work-card,
+.portfolio-template-blueprint .timeline article {
+  border-radius: 0;
+  border-color: color-mix(in srgb, var(--color-accent) 44%, var(--color-ink));
+  background: var(--color-surface);
+}
+
+.portfolio-template-bento .portfolio-shell {
+  width: min(1320px, calc(100% - 32px));
+}
+
+.portfolio-template-bento .section {
+  border-bottom: 0;
+}
+
+.portfolio-template-bento .portfolio-grid,
+.portfolio-template-bento .timeline {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: clamp(0.9rem, 2vw, 1.4rem);
+}
+
+.portfolio-template-bento .content-card,
+.portfolio-template-bento .work-card,
+.portfolio-template-bento .timeline article {
+  min-height: 16rem;
+  border-radius: 0.75rem;
+  padding: clamp(1rem, 2.5vw, 1.6rem);
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--color-accent) 10%, transparent), transparent 42%),
+    var(--color-surface);
+  box-shadow: 0 18px 58px color-mix(in srgb, black 12%, transparent);
+}
+
+.portfolio-template-bento .section-projects .work-card:first-child,
+.portfolio-template-bento .section-services .content-card:first-child {
+  grid-column: span 2;
+}
+
+.portfolio-template-casefile .portfolio-shell {
+  width: min(1040px, calc(100% - 32px));
+}
+
+.portfolio-template-casefile .hero {
+  min-height: auto;
+  border-bottom: 4px solid var(--color-ink);
+  padding-block: clamp(4rem, 9vw, 7rem);
+}
+
+.portfolio-template-casefile .hero h1 {
+  font-family: "IBM Plex Mono", "JetBrains Mono", monospace;
+  text-transform: uppercase;
+}
+
+.portfolio-template-casefile .section {
+  display: grid;
+  grid-template-columns: minmax(9rem, 0.28fr) minmax(0, 1fr);
+  gap: clamp(1.5rem, 4vw, 3rem);
+  padding-block: clamp(2.5rem, 5vw, 4rem);
+}
+
+.portfolio-template-casefile .section h2 {
+  margin: 0;
+  font-family: var(--font-body), sans-serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.portfolio-template-casefile .portfolio-grid {
+  grid-template-columns: 1fr;
+}
+
+.portfolio-template-casefile .content-card,
+.portfolio-template-casefile .work-card,
+.portfolio-template-casefile .timeline article {
+  min-height: auto;
+  border-width: 0 0 1px;
+  border-radius: 0;
+  background: transparent;
+  padding: 1.1rem 0;
+}
+
+.portfolio-template-monograph .portfolio-shell {
+  width: min(920px, calc(100% - 40px));
+}
+
+.portfolio-template-monograph .hero {
+  min-height: calc(92vh - 4rem);
+  align-content: end;
+  border-bottom: 1px solid var(--color-ink);
+}
+
+.portfolio-template-monograph .hero h1,
+.portfolio-template-monograph .section h2 {
+  font-weight: 400;
+}
+
+.portfolio-template-monograph .hero-avatar,
+.portfolio-template-monograph .hero-mark {
+  box-shadow: none;
+}
+
+.portfolio-template-monograph .section {
+  border-bottom: 0;
+  padding-block: clamp(3rem, 7vw, 6rem);
+}
+
+.portfolio-template-monograph .portfolio-grid {
+  grid-template-columns: 1fr;
+}
+
+.portfolio-template-monograph .content-card,
+.portfolio-template-monograph .work-card,
+.portfolio-template-monograph .timeline article {
+  border-width: 0 0 1px;
+  border-radius: 0;
+  background: transparent;
+  padding-inline: 0;
+}
+
+.portfolio-template-signal .portfolio-shell {
+  width: min(1200px, calc(100% - 32px));
+}
+
+.portfolio-template-signal .hero,
+.portfolio-template-signal .section {
+  border-color: color-mix(in srgb, #22c55e 45%, var(--color-ink));
+}
+
+.portfolio-template-signal .hero h1,
+.portfolio-template-signal .section h2 {
+  font-family: "JetBrains Mono", "IBM Plex Mono", monospace;
+  color: color-mix(in srgb, #22c55e 52%, var(--color-ink));
+}
+
+.portfolio-template-signal .content-card,
+.portfolio-template-signal .work-card,
+.portfolio-template-signal .timeline article {
+  border-color: color-mix(in srgb, #22c55e 38%, var(--color-ink));
+  background:
+    linear-gradient(180deg, color-mix(in srgb, #22c55e 10%, transparent), transparent 48%),
+    color-mix(in srgb, var(--color-surface) 78%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, #22c55e 16%, transparent);
+}
+
+.portfolio-template-signal .section h2::before {
+  content: "> ";
+  color: #22c55e;
+}
+
 .timeline article {
   border-left: 3px solid var(--color-accent);
   padding: 0.25rem 0 1.5rem 1.25rem;
@@ -4218,6 +4390,19 @@ select.input,
 
   .portfolio-template-brutalist .hero {
     padding: 1.25rem;
+    background:
+      linear-gradient(180deg, color-mix(in srgb, var(--color-accent) 16%, transparent) 50%, transparent 50%),
+      color-mix(in srgb, var(--color-surface) 80%, transparent);
+  }
+
+  .portfolio-template-casefile .section {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .portfolio-template-bento .section-projects .work-card:first-child,
+  .portfolio-template-bento .section-services .content-card:first-child {
+    grid-column: auto;
   }
 
 }
