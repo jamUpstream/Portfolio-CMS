@@ -567,6 +567,29 @@ select.input,
     radial-gradient(circle at 80% 20%, color-mix(in srgb, #22c55e 28%, transparent), transparent 34%);
 }
 
+.effect-sunset {
+  background:
+    linear-gradient(165deg, color-mix(in srgb, #fb923c 42%, transparent), transparent 58%),
+    radial-gradient(circle at 18% 22%, color-mix(in srgb, #f97316 48%, transparent), transparent 44%),
+    radial-gradient(circle at 78% 76%, color-mix(in srgb, #f59e0b 38%, transparent), transparent 50%);
+}
+
+.effect-canopy {
+  background-image:
+    radial-gradient(circle at 22% 24%, color-mix(in srgb, #22c55e 42%, transparent) 0 2px, transparent 2.1px),
+    radial-gradient(circle at 72% 66%, color-mix(in srgb, #166534 36%, transparent) 0 2px, transparent 2.1px),
+    linear-gradient(135deg, color-mix(in srgb, #16a34a 22%, transparent), transparent 52%);
+  background-size: 18px 18px, 22px 22px, auto;
+}
+
+.effect-galaxy {
+  background:
+    radial-gradient(circle at 24% 26%, color-mix(in srgb, #6366f1 52%, transparent), transparent 40%),
+    radial-gradient(circle at 78% 30%, color-mix(in srgb, #a855f7 42%, transparent), transparent 36%),
+    radial-gradient(circle at 50% 78%, color-mix(in srgb, #38bdf8 26%, transparent), transparent 40%),
+    color-mix(in srgb, var(--admin-bg) 72%, var(--admin-panel));
+}
+
 .effect-matrix {
   background-image:
     linear-gradient(90deg, transparent 78%, color-mix(in srgb, #22c55e 38%, transparent) 80%, transparent 82%),
@@ -2755,6 +2778,31 @@ select.input,
   opacity: 0.55;
 }
 
+.portfolio-bg-effect-sunset::before {
+  background:
+    linear-gradient(170deg, color-mix(in srgb, #fb923c 26%, transparent), transparent 56%),
+    radial-gradient(circle at 18% 18%, color-mix(in srgb, var(--color-accent) 30%, transparent), transparent 44%),
+    radial-gradient(circle at 82% 70%, color-mix(in srgb, #f59e0b 24%, transparent), transparent 48%);
+  opacity: 0.56;
+}
+
+.portfolio-bg-effect-canopy::before {
+  background-image:
+    radial-gradient(circle at 22% 24%, color-mix(in srgb, #22c55e 18%, transparent) 0 2px, transparent 2.2px),
+    radial-gradient(circle at 72% 66%, color-mix(in srgb, #166534 14%, transparent) 0 2px, transparent 2.2px),
+    linear-gradient(135deg, color-mix(in srgb, #16a34a 12%, transparent), transparent 54%);
+  background-size: 26px 26px, 32px 32px, auto;
+  opacity: 0.4;
+}
+
+.portfolio-bg-effect-galaxy::before {
+  background:
+    radial-gradient(circle at 18% 24%, color-mix(in srgb, #6366f1 36%, transparent), transparent 42%),
+    radial-gradient(circle at 82% 30%, color-mix(in srgb, #a855f7 30%, transparent), transparent 36%),
+    radial-gradient(circle at 54% 82%, color-mix(in srgb, #38bdf8 20%, transparent), transparent 40%);
+  opacity: 0.6;
+}
+
 .portfolio-bg-effect-matrix::before {
   background-image:
     linear-gradient(90deg, transparent 82%, color-mix(in srgb, #22c55e 14%, transparent) 84%, transparent 86%),
@@ -3867,6 +3915,95 @@ select.input,
 .portfolio-template-signal .section h2::before {
   content: "> ";
   color: #22c55e;
+}
+
+.portfolio-template-sonata .portfolio-shell {
+  width: min(1020px, calc(100% - 36px));
+}
+
+.portfolio-template-sonata .hero {
+  min-height: calc(80vh - 4rem);
+}
+
+.portfolio-template-sonata .hero h1,
+.portfolio-template-sonata .section h2 {
+  font-family: "Cormorant Garamond", "DM Serif Display", serif;
+  font-weight: 500;
+}
+
+.portfolio-template-sonata .section {
+  border-bottom-style: dashed;
+  border-bottom-color: color-mix(in srgb, var(--color-accent) 28%, transparent);
+}
+
+.portfolio-template-sonata .content-card,
+.portfolio-template-sonata .work-card,
+.portfolio-template-sonata .timeline article {
+  border-radius: 0.35rem;
+  border-color: color-mix(in srgb, var(--color-accent) 30%, var(--color-ink));
+  background:
+    linear-gradient(165deg, color-mix(in srgb, var(--color-accent) 8%, transparent), transparent 38%),
+    var(--color-surface);
+}
+
+.portfolio-template-ribbon .portfolio-shell {
+  width: min(1280px, calc(100% - 28px));
+}
+
+.portfolio-template-ribbon .hero {
+  min-height: calc(86vh - 4rem);
+  border: 0;
+  border-radius: 1rem;
+  background:
+    linear-gradient(112deg, color-mix(in srgb, var(--color-accent) 20%, transparent) 0 26%, transparent 26% 56%, color-mix(in srgb, var(--color-accent) 14%, transparent) 56%),
+    color-mix(in srgb, var(--color-surface) 86%, transparent);
+  padding: clamp(2rem, 6vw, 4rem);
+}
+
+.portfolio-template-ribbon .section {
+  border-bottom: 0;
+}
+
+.portfolio-template-ribbon .portfolio-grid {
+  gap: clamp(0.9rem, 2vw, 1.4rem);
+}
+
+.portfolio-template-ribbon .content-card,
+.portfolio-template-ribbon .work-card,
+.portfolio-template-ribbon .timeline article {
+  border-color: color-mix(in srgb, var(--color-accent) 34%, transparent);
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--color-surface) 88%, transparent);
+  box-shadow: 0 20px 62px color-mix(in srgb, black 10%, transparent);
+}
+
+.portfolio-template-signal-paper .portfolio-shell {
+  width: min(1140px, calc(100% - 32px));
+}
+
+.portfolio-template-signal-paper .hero,
+.portfolio-template-signal-paper .section {
+  border-color: color-mix(in srgb, var(--color-ink) 24%, transparent);
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--color-ink) 7%, transparent) 1px, transparent 1px),
+    linear-gradient(0deg, color-mix(in srgb, var(--color-ink) 7%, transparent) 1px, transparent 1px),
+    color-mix(in srgb, var(--color-surface) 88%, transparent);
+  background-size: 28px 28px;
+}
+
+.portfolio-template-signal-paper .hero h1,
+.portfolio-template-signal-paper .section h2 {
+  font-family: "IBM Plex Mono", "JetBrains Mono", monospace;
+}
+
+.portfolio-template-signal-paper .content-card,
+.portfolio-template-signal-paper .work-card,
+.portfolio-template-signal-paper .timeline article {
+  border-color: color-mix(in srgb, var(--color-accent) 34%, var(--color-ink));
+  border-radius: 0.3rem;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--color-accent) 8%, transparent), transparent 52%),
+    var(--color-surface);
 }
 
 .timeline article {

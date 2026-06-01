@@ -76,7 +76,10 @@ const portfolioTemplates = [
   ['bento', 'Bento systems'],
   ['casefile', 'Case file'],
   ['monograph', 'Monograph'],
-  ['signal', 'Signal lab']
+  ['signal', 'Signal lab'],
+  ['sonata', 'Sonata serif'],
+  ['ribbon', 'Ribbon stage'],
+  ['signal-paper', 'Signal paper']
 ];
 const visualStyles = [
   ['default', 'Default'],
@@ -140,7 +143,84 @@ const backgroundEffects = [
   ['crosshatch', 'Crosshatch'],
   ['aurora', 'Aurora'],
   ['rain', 'Rain'],
-  ['plasma', 'Plasma']
+  ['plasma', 'Plasma'],
+  ['sunset', 'Sunset'],
+  ['canopy', 'Canopy'],
+  ['galaxy', 'Galaxy']
+];
+const themePresets = [
+  {
+    key: 'ocean-depths',
+    label: 'Ocean Depths',
+    values: {
+      theme_primary_color: '#0f766e',
+      theme_background_color: '#ecf7f7',
+      theme_text_color: '#0f172a',
+      theme_surface_color: '#f8fdfd',
+      theme_dark_background_color: '#0b1324',
+      theme_dark_text_color: '#d9f3f5',
+      theme_dark_surface_color: '#13263d',
+      font_heading: 'DM Serif Display',
+      font_body: 'Manrope',
+      portfolio_template: 'sonata',
+      visual_style: 'default',
+      background_effect: 'grid'
+    }
+  },
+  {
+    key: 'sunset-boulevard',
+    label: 'Sunset Boulevard',
+    values: {
+      theme_primary_color: '#c2410c',
+      theme_background_color: '#fff2e2',
+      theme_text_color: '#3c1b12',
+      theme_surface_color: '#fff8ef',
+      theme_dark_background_color: '#221015',
+      theme_dark_text_color: '#ffe7cf',
+      theme_dark_surface_color: '#342029',
+      font_heading: 'Fraunces',
+      font_body: 'Plus Jakarta Sans',
+      portfolio_template: 'ribbon',
+      visual_style: 'default',
+      background_effect: 'sunset'
+    }
+  },
+  {
+    key: 'forest-canopy',
+    label: 'Forest Canopy',
+    values: {
+      theme_primary_color: '#166534',
+      theme_background_color: '#eef5ee',
+      theme_text_color: '#11231a',
+      theme_surface_color: '#f7fcf8',
+      theme_dark_background_color: '#101d16',
+      theme_dark_text_color: '#d7f0df',
+      theme_dark_surface_color: '#1b2f24',
+      font_heading: 'Cormorant Garamond',
+      font_body: 'Work Sans',
+      portfolio_template: 'atelier',
+      visual_style: 'default',
+      background_effect: 'canopy'
+    }
+  },
+  {
+    key: 'midnight-galaxy',
+    label: 'Midnight Galaxy',
+    values: {
+      theme_primary_color: '#6366f1',
+      theme_background_color: '#eef0ff',
+      theme_text_color: '#121526',
+      theme_surface_color: '#f7f8ff',
+      theme_dark_background_color: '#0b1020',
+      theme_dark_text_color: '#e2e8ff',
+      theme_dark_surface_color: '#171e33',
+      font_heading: 'Syne',
+      font_body: 'IBM Plex Sans',
+      portfolio_template: 'signal-paper',
+      visual_style: 'glass',
+      background_effect: 'galaxy'
+    }
+  }
 ];
 const defaultColors = {
   theme_primary_color: '#b45309',
@@ -179,6 +259,7 @@ function SectionOrderItem({ section }) {
 export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
   const [confirmReset, setConfirmReset] = useState(null);
+  const [selectedPreset, setSelectedPreset] = useState(themePresets[0].key);
   const { mode } = useTheme();
   const { register, handleSubmit, reset, control, watch } = useForm();
   const sensors = useSensors(
@@ -263,6 +344,19 @@ export default function SettingsPage() {
     toast.success('Default section order restored. Save settings to persist it.');
   }
 
+  function applyThemePreset(presetKey) {
+    const preset = themePresets.find((item) => item.key === presetKey);
+    if (!preset) return;
+    const nextValues = { ...watch(), ...preset.values };
+    reset(nextValues);
+    applyAdminTheme(nextValues, mode);
+    document.documentElement.style.setProperty('--color-accent', nextValues.theme_primary_color);
+    document.documentElement.style.setProperty('--color-paper', nextValues.theme_background_color);
+    document.documentElement.style.setProperty('--color-ink', nextValues.theme_text_color);
+    document.documentElement.style.setProperty('--color-surface', nextValues.theme_surface_color);
+    toast.success(`Applied ${preset.label}. Save settings to publish it.`);
+  }
+
   function reorderSections(event) {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
@@ -343,6 +437,16 @@ export default function SettingsPage() {
           <span>Body font</span>
           <select className="input" {...register('font_body')}>{fonts.map((font) => <option key={font}>{font}</option>)}</select>
         </label>
+      </div>
+      <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+        <label className="field">
+          <span>Theme preset (Theme Factory)</span>
+          <select className="input" value={selectedPreset} onChange={(event) => setSelectedPreset(event.target.value)}>
+            {themePresets.map((preset) => <option key={preset.key} value={preset.key}>{preset.label}</option>)}
+          </select>
+          <small className="field-hint">Applies matched colors, fonts, template, visual style, and background effect in one click.</small>
+        </label>
+        <button type="button" className="button secondary compact-button" onClick={() => applyThemePreset(selectedPreset)}>Apply preset</button>
       </div>
       <div className="settings-subhead">
         <span className="field-label">Portfolio layout</span>

@@ -5,7 +5,7 @@ import Icon from '../components/Icon';
 import Skeleton from '../components/Skeleton';
 import { useTheme } from '../contexts/ThemeContext';
 import { api } from '../lib/api';
-import { applyDocumentHead } from '../lib/documentHead';
+import { applyPortfolioSettings, parsePortfolioSettings } from '../lib/portfolioTheme';
 
 const endpointMap = {
   profile: '/profile',
@@ -20,8 +20,8 @@ const endpointMap = {
   settings: '/site-settings'
 };
 
-const portfolioCacheKey = 'portfolio-public-cache-v1';
-const defaultSectionOrder = ['about', 'services', 'projects', 'experience', 'education', 'skills', 'certificates', 'testimonials', 'contact'];
+const portfolioCacheKey = 'portfolio-public-cache-v2';
+const portfolioCacheTtlMs = 5 * 60 * 1000;
 const emptyPortfolioData = {
   profile: null,
   projects: [],
@@ -37,7 +37,15 @@ const emptyPortfolioData = {
 
 function readCachedPortfolioData() {
   try {
-    return JSON.parse(localStorage.getItem(portfolioCacheKey) || 'null');
+    const cached = JSON.parse(localStorage.getItem(portfolioCacheKey) || 'null');
+    if (!cached) return null;
+    if (cached.payload) {
+      return {
+        payload: { ...emptyPortfolioData, ...(cached.payload ?? {}) },
+        isFresh: typeof cached.storedAt === 'number' && (Date.now() - cached.storedAt) < portfolioCacheTtlMs
+      };
+    }
+    return { payload: { ...emptyPortfolioData, ...cached }, isFresh: false };
   } catch {
     return null;
   }
@@ -45,69 +53,25 @@ function readCachedPortfolioData() {
 
 function cachePortfolioData(payload) {
   try {
-    localStorage.setItem(portfolioCacheKey, JSON.stringify(payload));
+    localStorage.setItem(portfolioCacheKey, JSON.stringify({ payload, storedAt: Date.now() }));
   } catch {
     // Ignore storage limits or privacy-mode failures; cache is only a speed boost.
   }
 }
 
-function normalizeSectionOrder(value) {
-  let parsed = [];
+async function fetchPortfolioData() {
   try {
-    parsed = Array.isArray(value) ? value : JSON.parse(value || '[]');
+    const payload = await api.get('/portfolio');
+    return { ...emptyPortfolioData, ...(payload ?? {}) };
   } catch {
-    parsed = [];
+    const results = await Promise.allSettled(
+      Object.entries(endpointMap).map(([key, path]) => api.get(path).then((value) => [key, value]))
+    );
+    const fulfilled = results
+      .filter((result) => result.status === 'fulfilled')
+      .map((result) => result.value);
+    return { ...emptyPortfolioData, ...Object.fromEntries(fulfilled) };
   }
-  return [...parsed.filter((section) => defaultSectionOrder.includes(section)), ...defaultSectionOrder.filter((section) => !parsed.includes(section))];
-}
-
-function parseSettings(settings, mode = document.documentElement.dataset.theme || 'light') {
-  const visible = JSON.parse(settings.sections_visible || '{}');
-  const isDark = mode === 'dark';
-  return {
-    primary: settings.theme_primary_color || '#b45309',
-    background: isDark ? (settings.theme_dark_background_color || '#15130f') : (settings.theme_background_color || '#f6f0e7'),
-    text: isDark ? (settings.theme_dark_text_color || '#f4eadc') : (settings.theme_text_color || '#1d1a16'),
-    surface: isDark ? (settings.theme_dark_surface_color || '#1f1b17') : (settings.theme_surface_color || '#fffaf2'),
-    heading: settings.font_heading || 'Playfair Display',
-    body: settings.font_body || 'Manrope',
-    portfolioTemplate: settings.portfolio_template || 'editorial',
-    visualStyle: settings.visual_style || 'default',
-    backgroundEffect: settings.background_effect || 'plain',
-    heroTemplate: settings.hero_template || settings.hero_layout || 'split',
-    heroHeadingPosition: settings.hero_heading_position || settings.hero_text_position || 'left',
-    heroTaglinePosition: settings.hero_tagline_position || settings.hero_text_position || 'left',
-    heroButtonPosition: settings.hero_button_position || 'follow',
-    heroTextSize: settings.hero_text_size || 'large',
-    heroImageShape: settings.hero_image_shape || 'portrait',
-    showHeroImage: settings.show_hero_image !== 'false',
-    showHire: settings.show_hire_me_button !== 'false',
-    headerText: settings.header_text || '',
-    sectionOrder: normalizeSectionOrder(settings.section_order),
-    visible
-  };
-}
-
-function applySettings(settings, mode) {
-  const parsed = parseSettings(settings, mode);
-  applyDocumentHead(settings, 'Portfolio CMS');
-  document.documentElement.style.setProperty('--color-accent', parsed.primary);
-  document.documentElement.style.setProperty('--color-paper', parsed.background);
-  document.documentElement.style.setProperty('--color-ink', parsed.text);
-  document.documentElement.style.setProperty('--color-surface', parsed.surface);
-  document.documentElement.style.setProperty('--font-heading', `"${parsed.heading}"`);
-  document.documentElement.style.setProperty('--font-body', `"${parsed.body}"`);
-  const families = [
-    `family=${parsed.heading.replaceAll(' ', '+')}:wght@400;600;700`,
-    `family=${parsed.body.replaceAll(' ', '+')}:wght@400;500;700`
-  ].join('&');
-  const existing = document.getElementById('portfolio-fonts');
-  if (existing) existing.remove();
-  const link = document.createElement('link');
-  link.id = 'portfolio-fonts';
-  link.rel = 'stylesheet';
-  link.href = `https://fonts.googleapis.com/css2?${families}&display=swap`;
-  document.head.appendChild(link);
 }
 
 function useReveal() {
@@ -117,42 +81,44 @@ function useReveal() {
     }, { threshold: 0.12 });
     document.querySelectorAll('.reveal').forEach((node) => observer.observe(node));
     return () => observer.disconnect();
-  });
+  }, []);
 }
 
 export default function PortfolioHome() {
-  const [data, setData] = useState(() => readCachedPortfolioData());
-  const [loading, setLoading] = useState(() => !readCachedPortfolioData());
+  const [cached] = useState(() => readCachedPortfolioData());
+  const [data, setData] = useState(() => cached?.payload ?? null);
+  const [loading, setLoading] = useState(() => !cached?.payload);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const { mode, toggleMode } = useTheme();
   useReveal();
 
   useEffect(() => {
     let cancelled = false;
-
-    Promise.allSettled(Object.entries(endpointMap).map(([key, path]) => api.get(path).then((value) => [key, value]))).then((results) => {
-      if (cancelled) return;
-
-      const fulfilled = results
-        .filter((result) => result.status === 'fulfilled')
-        .map((result) => result.value);
-      const next = { ...emptyPortfolioData, ...Object.fromEntries(fulfilled) };
-
-      applySettings(next.settings, mode);
-      setData(next);
+    if (cached?.isFresh) {
       setLoading(false);
-      cachePortfolioData(next);
-    }).catch(() => {
-      if (!cancelled) setLoading(false);
-    });
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    fetchPortfolioData()
+      .then((next) => {
+        if (cancelled) return;
+        applyPortfolioSettings(next.settings, mode);
+        setData(next);
+        cachePortfolioData(next);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
 
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [cached?.isFresh]);
 
   useEffect(() => {
-    if (data?.settings) applySettings(data.settings, mode);
+    if (data?.settings) applyPortfolioSettings(data.settings, mode);
   }, [data?.settings, mode]);
 
   useEffect(() => {
@@ -165,7 +131,7 @@ export default function PortfolioHome() {
     return () => window.removeEventListener('scroll', updateBackToTop);
   }, []);
 
-  const settings = useMemo(() => parseSettings(data?.settings ?? {}, mode), [data, mode]);
+  const settings = useMemo(() => parsePortfolioSettings(data?.settings ?? {}, mode), [data, mode]);
   const groupedSkills = useMemo(() => {
     return (data?.skills ?? []).reduce((groups, skill) => {
       groups[skill.category || 'General'] = [...(groups[skill.category || 'General'] ?? []), skill];
@@ -204,7 +170,7 @@ export default function PortfolioHome() {
         <div className="portfolio-grid">
           {data.projects.map((project) => (
             <Link className="work-card" to={`/projects/${project.slug}`} key={project.id}>
-              {project.cover_image_url ? <img src={project.cover_image_url} alt={project.title} /> : null}
+              {project.cover_image_url ? <img src={project.cover_image_url} alt={project.title} loading="lazy" decoding="async" /> : null}
               <div><h3>{project.title}</h3><p>{project.short_description}</p></div>
             </Link>
           ))}
@@ -266,7 +232,7 @@ export default function PortfolioHome() {
             </div>
           </div>
           {settings.showHeroImage ? (
-            profile.avatar_url ? <img className="hero-avatar" src={profile.avatar_url} alt={profile.name} /> : <div className="hero-mark" />
+            profile.avatar_url ? <img className="hero-avatar" src={profile.avatar_url} alt={profile.name} loading="eager" decoding="async" fetchPriority="high" /> : <div className="hero-mark" />
           ) : null}
         </section>
         {settings.sectionOrder.map((section) => sectionRenderers[section]?.())}
@@ -279,10 +245,10 @@ export default function PortfolioHome() {
 }
 
 function PortfolioLoading({ mode }) {
-  const loadingSettings = parseSettings({}, mode);
+  const loadingSettings = parsePortfolioSettings({}, mode);
 
   useEffect(() => {
-    applySettings({}, mode);
+    applyPortfolioSettings({}, mode);
   }, [mode]);
 
   return (

@@ -23,6 +23,7 @@ const resources = {
 const protectedResources = Object.keys(resources);
 const idSchema = z.string().uuid();
 const allowedUploadBuckets = new Set(['avatars', 'project-covers', 'logos', 'certificates', 'og-images', 'icons', 'resumes']);
+const publicCacheControl = 'public, max-age=60, s-maxage=600, stale-while-revalidate=86400';
 
 const resumeImportSchema = {
   type: 'object',
@@ -222,6 +223,10 @@ function applyOrder(query, order) {
   return order.split(',').reduce((current, key) => current.order(key.trim(), { ascending: true }), query);
 }
 
+function setPublicCache(res) {
+  res.set('Cache-Control', publicCacheControl);
+}
+
 async function getRows(config, options = {}) {
   let query = supabaseAdmin.from(config.table).select('*');
 
@@ -242,6 +247,7 @@ router.get('/profile', async (_req, res, next) => {
     const { data, error } = await supabaseAdmin.from('profile').select('*').limit(1).maybeSingle();
     throwSchemaSetupError(error);
     if (error) throw error;
+    setPublicCache(res);
     res.json(data ?? null);
   } catch (error) {
     next(error);
@@ -268,6 +274,7 @@ router.get('/site-settings', async (_req, res, next) => {
     const { data, error } = await supabaseAdmin.from('site_settings').select('*');
     throwSchemaSetupError(error);
     if (error) throw error;
+    setPublicCache(res);
     res.json(Object.fromEntries((data ?? []).map((row) => [row.key, row.value])));
   } catch (error) {
     next(error);
@@ -354,10 +361,65 @@ router.get('/admin/:resource', authMiddleware, async (req, res, next) => {
   }
 });
 
+router.get('/portfolio', async (_req, res, next) => {
+  try {
+    const [
+      profile,
+      projects,
+      experience,
+      education,
+      certificates,
+      skills,
+      services,
+      testimonials,
+      socials,
+      settings
+    ] = await Promise.all([
+      (async () => {
+        const { data, error } = await supabaseAdmin.from('profile').select('*').limit(1).maybeSingle();
+        throwSchemaSetupError(error);
+        if (error) throw error;
+        return data ?? null;
+      })(),
+      getRows(resources.projects, { publicOnly: true }),
+      getRows(resources.experience, { publicOnly: true }),
+      getRows(resources.education, { publicOnly: true }),
+      getRows(resources.certificates, { publicOnly: true }),
+      getRows(resources.skills, { publicOnly: true }),
+      getRows(resources.services, { publicOnly: true }),
+      getRows(resources.testimonials, { publicOnly: true }),
+      getRows(resources['social-links'], { publicOnly: true }),
+      (async () => {
+        const { data, error } = await supabaseAdmin.from('site_settings').select('*');
+        throwSchemaSetupError(error);
+        if (error) throw error;
+        return Object.fromEntries((data ?? []).map((row) => [row.key, row.value]));
+      })()
+    ]);
+
+    setPublicCache(res);
+    res.json({
+      profile,
+      projects,
+      experience,
+      education,
+      certificates,
+      skills,
+      services,
+      testimonials,
+      socials,
+      settings
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.get('/:resource', async (req, res, next) => {
   try {
     const config = resources[req.params.resource];
     if (!config) return res.status(404).json({ error: 'Unknown resource' });
+    setPublicCache(res);
     res.json(await getRows(config, { publicOnly: true }));
   } catch (error) {
     next(error);
@@ -376,6 +438,7 @@ router.get('/projects/:slug', async (req, res, next) => {
     throwSchemaSetupError(error);
     if (error) throw error;
     if (!data) return res.status(404).json({ error: 'Project not found' });
+    setPublicCache(res);
     res.json(data);
   } catch (error) {
     next(error);

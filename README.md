@@ -97,6 +97,7 @@ Public endpoints live under `/api/v1`:
 
 ```text
 GET /profile
+GET /portfolio
 GET /projects
 GET /projects/:slug
 GET /experience
