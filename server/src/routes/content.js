@@ -224,6 +224,11 @@ function applyOrder(query, order) {
 }
 
 function setPublicCache(res) {
+  if (process.env.NODE_ENV !== 'production') {
+    res.set('Cache-Control', 'no-store, max-age=0');
+    res.set('Pragma', 'no-cache');
+    return;
+  }
   res.set('Cache-Control', publicCacheControl);
 }
 

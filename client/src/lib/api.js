@@ -39,8 +39,8 @@ async function request(path, options = {}) {
 }
 
 export const api = {
-  get: (path) => request(path),
-  getAuth: (path) => request(path, { auth: true }),
+  get: (path, options = {}) => request(path, options),
+  getAuth: (path, options = {}) => request(path, { ...options, auth: true }),
   post: (path, body) => request(path, { method: 'POST', body, auth: true }),
   patch: (path, body) => request(path, { method: 'PATCH', body, auth: true }),
   delete: (path) => request(path, { method: 'DELETE', auth: true }),

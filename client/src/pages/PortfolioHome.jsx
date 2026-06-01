@@ -61,11 +61,11 @@ function cachePortfolioData(payload) {
 
 async function fetchPortfolioData() {
   try {
-    const payload = await api.get('/portfolio');
+    const payload = await api.get('/portfolio', { cache: 'no-store' });
     return { ...emptyPortfolioData, ...(payload ?? {}) };
   } catch {
     const results = await Promise.allSettled(
-      Object.entries(endpointMap).map(([key, path]) => api.get(path).then((value) => [key, value]))
+      Object.entries(endpointMap).map(([key, path]) => api.get(path, { cache: 'no-store' }).then((value) => [key, value]))
     );
     const fulfilled = results
       .filter((result) => result.status === 'fulfilled')
@@ -94,12 +94,7 @@ export default function PortfolioHome() {
 
   useEffect(() => {
     let cancelled = false;
-    if (cached?.isFresh) {
-      setLoading(false);
-      return () => {
-        cancelled = true;
-      };
-    }
+    if (cached?.isFresh) setLoading(false);
 
     fetchPortfolioData()
       .then((next) => {
@@ -232,7 +227,7 @@ export default function PortfolioHome() {
             </div>
           </div>
           {settings.showHeroImage ? (
-            profile.avatar_url ? <img className="hero-avatar" src={profile.avatar_url} alt={profile.name} loading="eager" decoding="async" fetchPriority="high" /> : <div className="hero-mark" />
+            profile.avatar_url ? <img className="hero-avatar" src={profile.avatar_url} alt={profile.name} loading="eager" decoding="async" fetchpriority="high" /> : <div className="hero-mark" />
           ) : null}
         </section>
         {settings.sectionOrder.map((section) => sectionRenderers[section]?.())}

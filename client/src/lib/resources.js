@@ -9,7 +9,10 @@ export const resources = {
     singular: 'Project',
     path: '/projects',
     columns: ['title', 'status', 'featured', 'sort_order'],
-    imageFields: [{ name: 'cover_image_url', label: 'Cover image', bucket: 'project-covers' }],
+    imageFields: [
+      { name: 'cover_image_url', label: 'Cover image', bucket: 'project-covers' },
+      { name: 'gallery_image_urls', label: 'Project gallery', bucket: 'project-covers', multiple: true, maxFiles: 5 }
+    ],
     richFields: ['description'],
     schema: z.object({
       title: z.string().min(1),
@@ -17,6 +20,7 @@ export const resources = {
       short_description: text,
       description: text,
       cover_image_url: text,
+      gallery_image_urls: z.array(z.string().url()).max(5).optional().default([]),
       tech_stack: z.string().optional(),
       live_url: text,
       github_url: text,
@@ -164,8 +168,13 @@ export function normalizePayload(resourceKey, values) {
   );
 
   if (resourceKey === 'projects') {
+    const gallery = Array.isArray(normalized.gallery_image_urls)
+      ? normalized.gallery_image_urls.map((item) => String(item || '').trim()).filter(Boolean).slice(0, 5)
+      : [];
+
     return {
       ...normalized,
+      gallery_image_urls: gallery,
       tech_stack: typeof normalized.tech_stack === 'string'
         ? normalized.tech_stack.split(',').map((item) => item.trim()).filter(Boolean)
         : normalized.tech_stack
@@ -181,6 +190,7 @@ export function toFormValues(row) {
 
   return {
     ...normalized,
+    gallery_image_urls: Array.isArray(row?.gallery_image_urls) ? row.gallery_image_urls : [],
     tech_stack: Array.isArray(row?.tech_stack) ? row.tech_stack.join(', ') : row?.tech_stack
   };
 }

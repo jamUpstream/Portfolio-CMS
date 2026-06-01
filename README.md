@@ -21,7 +21,7 @@ npm run install:all
 
 2. Create a Supabase project.
 
-3. Run `supabase/migrations/001_initial_schema.sql` in the Supabase SQL editor.
+3. Run all files in `supabase/migrations/` in order (`001...`, then `002...`) in the Supabase SQL editor.
 
 4. Run `supabase/seed.sql` for starter content.
 
@@ -88,6 +88,7 @@ API: `http://localhost:4000`
 - File uploads through Express + Multer to Supabase Storage buckets
 - AI resume import for PDF/TXT files through Groq, with an admin review step before saving
 - Runtime site settings for primary color, fonts, hero layout, section visibility, OG image, favicon, and hire button
+- Project gallery support (up to 5 images per project)
 - Dark mode toggle with system preference fallback and localStorage persistence
 - SQL tables, indexes, RLS policies, storage buckets, and seed data
 

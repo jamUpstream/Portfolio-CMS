@@ -146,7 +146,10 @@ const backgroundEffects = [
   ['plasma', 'Plasma'],
   ['sunset', 'Sunset'],
   ['canopy', 'Canopy'],
-  ['galaxy', 'Galaxy']
+  ['galaxy', 'Galaxy'],
+  ['aurora-flow', 'Aurora flow (animated)'],
+  ['grid-drift', 'Grid drift (animated)'],
+  ['orbital', 'Orbital haze (animated)']
 ];
 const themePresets = [
   {
@@ -218,7 +221,7 @@ const themePresets = [
       font_body: 'IBM Plex Sans',
       portfolio_template: 'signal-paper',
       visual_style: 'glass',
-      background_effect: 'galaxy'
+      background_effect: 'aurora-flow'
     }
   }
 ];
@@ -260,6 +263,7 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
   const [confirmReset, setConfirmReset] = useState(null);
   const [selectedPreset, setSelectedPreset] = useState(themePresets[0].key);
+  const [lastSyncedAt, setLastSyncedAt] = useState(null);
   const { mode } = useTheme();
   const { register, handleSubmit, reset, control, watch } = useForm();
   const sensors = useSensors(
@@ -311,12 +315,14 @@ export default function SettingsPage() {
         show_hire_me_button: values.show_hire_me_button ? 'true' : 'false'
       };
       await api.patch('/site-settings', payload);
+      localStorage.removeItem('portfolio-public-cache-v2');
       applyDocumentHead(payload, 'Portfolio CMS');
       applyAdminTheme(payload, mode);
       document.documentElement.style.setProperty('--color-accent', payload.theme_primary_color || '#b45309');
       document.documentElement.style.setProperty('--color-paper', payload.theme_background_color || '#f6f0e7');
       document.documentElement.style.setProperty('--color-ink', payload.theme_text_color || '#1d1a16');
       document.documentElement.style.setProperty('--color-surface', payload.theme_surface_color || '#fffaf2');
+      setLastSyncedAt(new Date());
       toast.success('Settings saved');
     } catch (error) {
       toast.error(error.message);
@@ -561,7 +567,10 @@ export default function SettingsPage() {
         <textarea className="input min-h-24" {...register('meta_description')} />
       </label>
       <Controller control={control} name="og_image_url" render={({ field }) => <UploadField label="OG image" bucket="og-images" value={field.value} onChange={field.onChange} />} />
-      <button className="button">Save settings</button>
+      <div className="flex flex-wrap items-center gap-3">
+        <button className="button">Save settings</button>
+        {lastSyncedAt ? <small className="field-hint">Last synced {lastSyncedAt.toLocaleTimeString()}</small> : null}
+      </div>
       <ConfirmDialog
         open={Boolean(confirmReset)}
         title={confirmReset === 'colors' ? 'Reset colors?' : 'Reset section order?'}

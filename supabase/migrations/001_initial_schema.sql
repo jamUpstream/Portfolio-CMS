@@ -28,6 +28,7 @@ create table if not exists projects (
   description text,
   short_description text,
   cover_image_url text,
+  gallery_image_urls text[] default '{}',
   tech_stack text[] default '{}',
   live_url text,
   github_url text,

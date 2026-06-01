@@ -8,6 +8,7 @@ import { normalizePayload, resources, toFormValues } from '../../lib/resources';
 import RichTextEditor from '../../components/RichTextEditor';
 import SortableTable from '../../components/SortableTable';
 import UploadField from '../../components/UploadField';
+import MultiUploadField from '../../components/MultiUploadField';
 import Skeleton from '../../components/Skeleton';
 import ConfirmDialog from '../../components/ConfirmDialog';
 
@@ -33,7 +34,12 @@ export default function AdminResourcePage({ resourceKey }) {
   const [deleting, setDeleting] = useState(false);
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
   const lastError = useRef('');
-  const defaults = useMemo(() => Object.fromEntries(Object.keys(config.schema.shape).map((key) => [key, key === 'status' ? 'draft' : ''])), [config]);
+  const defaults = useMemo(() => Object.fromEntries(Object.keys(config.schema.shape).map((key) => {
+    if (key === 'status') return [key, 'draft'];
+    if (key === 'featured') return [key, false];
+    if (key === 'gallery_image_urls') return [key, []];
+    return [key, ''];
+  })), [config]);
 
   const { register, handleSubmit, reset, control, watch, setValue, formState: { errors } } = useForm({
     resolver: zodResolver(config.schema),
@@ -168,6 +174,24 @@ export default function AdminResourcePage({ resourceKey }) {
                 const image = config.imageFields?.find((field) => field.name === name);
                 const rich = config.richFields?.includes(name);
                 if (image) {
+                  if (image.multiple) {
+                    return (
+                      <Controller
+                        key={name}
+                        control={control}
+                        name={name}
+                        render={({ field }) => (
+                          <MultiUploadField
+                            label={image.label}
+                            bucket={image.bucket}
+                            maxFiles={image.maxFiles || 5}
+                            value={field.value}
+                            onChange={field.onChange}
+                          />
+                        )}
+                      />
+                    );
+                  }
                   return (
                     <Controller
                       key={name}
