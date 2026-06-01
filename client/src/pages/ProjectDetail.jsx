@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Github, ExternalLink } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Github, ExternalLink, X } from 'lucide-react';
 import { api } from '../lib/api';
 import Skeleton from '../components/Skeleton';
 import { useTheme } from '../contexts/ThemeContext';
@@ -10,6 +10,7 @@ export default function ProjectDetail() {
   const { slug } = useParams();
   const [project, setProject] = useState(null);
   const [settings, setSettings] = useState(null);
+  const [lightboxIndex, setLightboxIndex] = useState(null);
   const { mode } = useTheme();
 
   useEffect(() => {
@@ -31,6 +32,8 @@ export default function ProjectDetail() {
   const galleryImages = Array.isArray(project?.gallery_image_urls)
     ? project.gallery_image_urls.filter(Boolean).slice(0, 5)
     : [];
+  const allProjectImages = [...new Set([project?.cover_image_url, ...galleryImages].filter(Boolean))];
+  const activeImage = lightboxIndex != null ? allProjectImages[lightboxIndex] : null;
 
   if (!project) {
     return (
@@ -40,6 +43,47 @@ export default function ProjectDetail() {
     );
   }
 
+  function openLightbox(index) {
+    if (!allProjectImages[index]) return;
+    setLightboxIndex(index);
+  }
+
+  function closeLightbox() {
+    setLightboxIndex(null);
+  }
+
+  function showPreviousImage() {
+    if (!allProjectImages.length) return;
+    setLightboxIndex((current) => (current == null ? 0 : (current - 1 + allProjectImages.length) % allProjectImages.length));
+  }
+
+  function showNextImage() {
+    if (!allProjectImages.length) return;
+    setLightboxIndex((current) => (current == null ? 0 : (current + 1) % allProjectImages.length));
+  }
+
+  useEffect(() => {
+    if (lightboxIndex == null) return undefined;
+
+    function onKeyDown(event) {
+      if (event.key === 'Escape') closeLightbox();
+      if (event.key === 'ArrowLeft') showPreviousImage();
+      if (event.key === 'ArrowRight') showNextImage();
+    }
+
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [lightboxIndex, allProjectImages.length]);
+
+  useEffect(() => {
+    if (lightboxIndex == null) return undefined;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [lightboxIndex]);
+
   return (
     <div className={`portfolio-page portfolio-template-${parsedSettings.portfolioTemplate} portfolio-style-${parsedSettings.visualStyle} portfolio-bg-effect-${parsedSettings.backgroundEffect}`}>
       <main className="portfolio-shell">
@@ -47,13 +91,17 @@ export default function ProjectDetail() {
         <article className="project-detail">
           <h1>{project.title}</h1>
           <p>{project.short_description}</p>
-          {project.cover_image_url ? <img src={project.cover_image_url} alt={project.title} loading="lazy" decoding="async" /> : null}
+          {project.cover_image_url ? (
+            <button type="button" className="project-lightbox-trigger" onClick={() => openLightbox(allProjectImages.indexOf(project.cover_image_url))} aria-label="Enlarge cover image">
+              <img src={project.cover_image_url} alt={project.title} loading="lazy" decoding="async" />
+            </button>
+          ) : null}
           {galleryImages.length ? (
             <section className="project-gallery" aria-label="Project gallery">
               {galleryImages.map((image, index) => (
-                <a key={`${image}-${index}`} href={image} target="_blank" rel="noreferrer" className="project-gallery-item">
+                <button type="button" key={`${image}-${index}`} className="project-gallery-item" onClick={() => openLightbox(allProjectImages.indexOf(image))} aria-label={`Enlarge screenshot ${index + 1}`}>
                   <img src={image} alt={`${project.title} screenshot ${index + 1}`} loading="lazy" decoding="async" />
-                </a>
+                </button>
               ))}
             </section>
           ) : null}
@@ -65,6 +113,24 @@ export default function ProjectDetail() {
           </div>
         </article>
       </main>
+      {activeImage ? (
+        <div className="project-lightbox-layer" role="dialog" aria-modal="true" aria-label="Project image viewer">
+          <button type="button" className="project-lightbox-backdrop" onClick={closeLightbox} aria-label="Close image viewer" />
+          <div className="project-lightbox-panel">
+            <button type="button" className="icon-button project-lightbox-close" onClick={closeLightbox} aria-label="Close image viewer">
+              <X className="h-4 w-4" />
+            </button>
+            <button type="button" className="icon-button project-lightbox-nav project-lightbox-prev" onClick={showPreviousImage} aria-label="Previous image">
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+            <img className="project-lightbox-image" src={activeImage} alt={`${project.title} enlarged screenshot ${lightboxIndex + 1}`} />
+            <button type="button" className="icon-button project-lightbox-nav project-lightbox-next" onClick={showNextImage} aria-label="Next image">
+              <ChevronRight className="h-5 w-5" />
+            </button>
+            <p className="project-lightbox-counter">{lightboxIndex + 1} / {allProjectImages.length}</p>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

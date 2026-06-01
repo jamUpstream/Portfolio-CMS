@@ -4152,19 +4152,109 @@ select.input,
   gap: 0.75rem;
 }
 
+.project-lightbox-trigger {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: zoom-in;
+}
+
 .project-gallery-item {
   display: block;
   border: 1px solid color-mix(in srgb, var(--color-ink) 12%, transparent);
   border-radius: 0.5rem;
-  overflow: hidden;
   background: var(--color-surface);
+  padding: 0;
+  cursor: zoom-in;
+  overflow: hidden;
 }
 
-.project-gallery-item img {
+.project-gallery-item img,
+.project-lightbox-trigger img {
   width: 100%;
   aspect-ratio: 4 / 3;
   object-fit: cover;
   display: block;
+}
+
+.project-lightbox-trigger > img {
+  aspect-ratio: 16 / 10;
+}
+
+.project-lightbox-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.project-lightbox-backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: color-mix(in srgb, black 72%, transparent);
+}
+
+.project-lightbox-panel {
+  position: relative;
+  z-index: 1;
+  width: min(92vw, 1060px);
+  max-height: 90dvh;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+}
+
+.project-lightbox-image {
+  width: min(100%, 980px);
+  max-height: calc(90dvh - 3.5rem);
+  object-fit: contain;
+  border-radius: 0.5rem;
+  box-shadow: 0 20px 80px color-mix(in srgb, black 50%, transparent);
+}
+
+.project-lightbox-close {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  z-index: 2;
+  border-color: color-mix(in srgb, white 35%, transparent);
+  background: color-mix(in srgb, black 48%, transparent);
+  color: #fff;
+}
+
+.project-lightbox-nav {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  transform: translateY(-50%);
+  border-color: color-mix(in srgb, white 35%, transparent);
+  background: color-mix(in srgb, black 48%, transparent);
+  color: #fff;
+}
+
+.project-lightbox-prev {
+  left: 0.4rem;
+}
+
+.project-lightbox-next {
+  right: 0.4rem;
+}
+
+.project-lightbox-counter {
+  position: absolute;
+  bottom: 0.4rem;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  border: 1px solid color-mix(in srgb, var(--color-ink) 12%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, black 52%, transparent);
+  color: #fff;
+  padding: 0.25rem 0.65rem;
+  font-size: 0.76rem;
 }
 
 .portfolio-style-glass {
@@ -4656,6 +4746,19 @@ select.input,
 
   .project-gallery {
     grid-template-columns: 1fr;
+  }
+
+  .project-lightbox-layer {
+    padding: 0.5rem;
+  }
+
+  .project-lightbox-panel {
+    width: 100%;
+    padding: 0.75rem;
+  }
+
+  .project-lightbox-image {
+    max-height: calc(88dvh - 3rem);
   }
 
   .portfolio-template-index .section,
