@@ -6395,6 +6395,14 @@ select.input,
   padding: 0;
 }
 
+.dispatch-nav .dispatch-nav-inner,
+.dispatch-nav .dispatch-nav-rule,
+.dispatch-nav .dispatch-nav-ticker {
+  width: min(1440px, calc(100% - 24px));
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .dispatch-nav-inner {
   display: grid;
   grid-template-columns: 160px minmax(0, 1fr) 160px;
@@ -6430,14 +6438,13 @@ select.input,
 .dispatch-nav-rule {
   height: 1px;
   background: color-mix(in srgb, var(--color-ink) 20%, transparent);
-  margin: 0 1.25rem;
 }
 
 .dispatch-nav-ticker {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.35rem 1.25rem;
+  padding: 0.35rem 0;
   font-size: 0.78rem;
   color: color-mix(in srgb, var(--color-ink) 60%, transparent);
   overflow: hidden;
