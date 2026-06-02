@@ -1,12 +1,17 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Eye, EyeOff, LockKeyhole } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import ConfirmDialog from '../components/ConfirmDialog';
+import { api } from '../lib/api';
+import { applyAdminTheme } from '../lib/adminTheme';
+import { applyPortfolioSettings } from '../lib/portfolioTheme';
+import { useTheme } from '../contexts/ThemeContext';
 
 export default function Login() {
   const { signIn, session, signOut } = useAuth();
+  const { mode } = useTheme();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -14,6 +19,27 @@ export default function Login() {
   const [logoutOpen, setLogoutOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [siteSettings, setSiteSettings] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    api.get('/site-settings', { cache: 'no-store' }).then((settings) => {
+      if (cancelled) return;
+      setSiteSettings(settings);
+    }).catch(() => {
+      if (cancelled) return;
+      setSiteSettings({});
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    const settings = siteSettings ?? {};
+    applyAdminTheme(settings, mode);
+    applyPortfolioSettings(settings, mode, settings.site_title || 'Portfolio CMS');
+  }, [siteSettings, mode]);
 
   async function handleSubmit(event) {
     event.preventDefault();

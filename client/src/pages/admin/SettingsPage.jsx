@@ -223,6 +223,114 @@ const themePresets = [
       visual_style: 'glass',
       background_effect: 'aurora-flow'
     }
+  },
+  {
+    key: 'modern-minimalist',
+    label: 'Modern Minimalist',
+    values: {
+      theme_primary_color: '#334155',
+      theme_background_color: '#f3f4f6',
+      theme_text_color: '#111827',
+      theme_surface_color: '#ffffff',
+      theme_dark_background_color: '#0f172a',
+      theme_dark_text_color: '#e2e8f0',
+      theme_dark_surface_color: '#1e293b',
+      font_heading: 'Plus Jakarta Sans',
+      font_body: 'Public Sans',
+      portfolio_template: 'studio',
+      visual_style: 'default',
+      background_effect: 'plain'
+    }
+  },
+  {
+    key: 'golden-hour',
+    label: 'Golden Hour',
+    values: {
+      theme_primary_color: '#b45309',
+      theme_background_color: '#fff7df',
+      theme_text_color: '#2c1a0f',
+      theme_surface_color: '#fffdf5',
+      theme_dark_background_color: '#1a130d',
+      theme_dark_text_color: '#fdecc8',
+      theme_dark_surface_color: '#2b2018',
+      font_heading: 'Fraunces',
+      font_body: 'Manrope',
+      portfolio_template: 'editorial',
+      visual_style: 'default',
+      background_effect: 'sunset'
+    }
+  },
+  {
+    key: 'arctic-frost',
+    label: 'Arctic Frost',
+    values: {
+      theme_primary_color: '#0ea5e9',
+      theme_background_color: '#edf8ff',
+      theme_text_color: '#0f172a',
+      theme_surface_color: '#f8fcff',
+      theme_dark_background_color: '#08172a',
+      theme_dark_text_color: '#dbeafe',
+      theme_dark_surface_color: '#12253f',
+      font_heading: 'Source Serif 4',
+      font_body: 'IBM Plex Sans',
+      portfolio_template: 'minimalist',
+      visual_style: 'glass',
+      background_effect: 'aurora'
+    }
+  },
+  {
+    key: 'desert-rose',
+    label: 'Desert Rose',
+    values: {
+      theme_primary_color: '#be185d',
+      theme_background_color: '#fff1f2',
+      theme_text_color: '#3f1023',
+      theme_surface_color: '#fff8f9',
+      theme_dark_background_color: '#2a1120',
+      theme_dark_text_color: '#ffe4ef',
+      theme_dark_surface_color: '#3b1d31',
+      font_heading: 'Libre Baskerville',
+      font_body: 'Karla',
+      portfolio_template: 'atelier',
+      visual_style: 'default',
+      background_effect: 'crosshatch'
+    }
+  },
+  {
+    key: 'tech-innovation',
+    label: 'Tech Innovation',
+    values: {
+      theme_primary_color: '#22c55e',
+      theme_background_color: '#ecfdf3',
+      theme_text_color: '#072618',
+      theme_surface_color: '#f5fff9',
+      theme_dark_background_color: '#061c15',
+      theme_dark_text_color: '#c9fce0',
+      theme_dark_surface_color: '#113328',
+      font_heading: 'JetBrains Mono',
+      font_body: 'IBM Plex Sans',
+      portfolio_template: 'signal',
+      visual_style: 'default',
+      background_effect: 'grid-drift'
+    }
+  },
+  {
+    key: 'botanical-garden',
+    label: 'Botanical Garden',
+    values: {
+      theme_primary_color: '#15803d',
+      theme_background_color: '#eef9f0',
+      theme_text_color: '#10281a',
+      theme_surface_color: '#f9fffa',
+      theme_dark_background_color: '#0f2116',
+      theme_dark_text_color: '#d9f7e1',
+      theme_dark_surface_color: '#1a3323',
+      font_heading: 'Cormorant Garamond',
+      font_body: 'Nunito Sans',
+      portfolio_template: 'bento',
+      visual_style: 'glass',
+      background_effect: 'canopy'
+    }
   }
 ];
 const defaultColors = {
@@ -444,15 +552,17 @@ export default function SettingsPage() {
           <select className="input" {...register('font_body')}>{fonts.map((font) => <option key={font}>{font}</option>)}</select>
         </label>
       </div>
-      <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
-        <label className="field">
+      <div className="theme-preset-row">
+        <label className="field theme-preset-field">
           <span>Theme preset (Theme Factory)</span>
           <select className="input" value={selectedPreset} onChange={(event) => setSelectedPreset(event.target.value)}>
             {themePresets.map((preset) => <option key={preset.key} value={preset.key}>{preset.label}</option>)}
           </select>
           <small className="field-hint">Applies matched colors, fonts, template, visual style, and background effect in one click.</small>
         </label>
-        <button type="button" className="button secondary compact-button" onClick={() => applyThemePreset(selectedPreset)}>Apply preset</button>
+        <div className="theme-preset-actions">
+          <button type="button" className="button secondary compact-button" onClick={() => applyThemePreset(selectedPreset)}>Apply preset</button>
+        </div>
       </div>
       <div className="settings-subhead">
         <span className="field-label">Portfolio layout</span>
