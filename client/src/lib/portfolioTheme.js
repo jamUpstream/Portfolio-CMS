@@ -25,7 +25,7 @@ const defaultTheme = {
 };
 
 const defaultSectionOrder = ['about', 'services', 'projects', 'experience', 'education', 'skills', 'certificates', 'testimonials', 'contact'];
-const supportedPortfolioTemplates = new Set(['editorial', 'atlas', 'cinema', 'ledger', 'exhibit', 'mosaic', 'panorama', 'folio', 'dispatch']);
+const supportedPortfolioTemplates = new Set(['editorial', 'atlas', 'cinema', 'ledger', 'panorama', 'folio', 'dispatch', 'briefing', 'fieldnotes']);
 const portfolioTemplateAliases = {
   atelier: 'atlas',
   studio: 'editorial',
@@ -51,7 +51,9 @@ const portfolioTemplateAliases = {
   archive: 'folio',
   casebook: 'folio',
   newspaper: 'dispatch',
-  press: 'dispatch'
+  press: 'dispatch',
+  exhibit: 'briefing',
+  mosaic: 'fieldnotes'
 };
 let currentFontsKey = '';
 

@@ -62,11 +62,11 @@ const portfolioTemplates = [
   ['atlas', 'Atlas board'],
   ['cinema', 'Cinema reel'],
   ['ledger', 'Ledger dossier'],
-  ['exhibit', 'Exhibit wall'],
-  ['mosaic', 'Mosaic field'],
   ['panorama', 'Panorama scenes'],
   ['folio', 'Folio archive'],
-  ['dispatch', 'Dispatch press']
+  ['dispatch', 'Dispatch press'],
+  ['briefing', 'Briefing deck'],
+  ['fieldnotes', 'Field notes']
 ];
 const portfolioTemplateAliases = {
   atelier: 'atlas',
@@ -93,7 +93,9 @@ const portfolioTemplateAliases = {
   archive: 'folio',
   casebook: 'folio',
   newspaper: 'dispatch',
-  press: 'dispatch'
+  press: 'dispatch',
+  exhibit: 'briefing',
+  mosaic: 'fieldnotes'
 };
 const visualStyles = [
   ['default', 'Default'],
@@ -381,7 +383,7 @@ const themePresets = [
       theme_dark_surface_color: '#261f1a',
       font_heading: 'Libre Baskerville',
       font_body: 'Public Sans',
-      portfolio_template: 'mosaic',
+      portfolio_template: 'fieldnotes',
       visual_style: 'default',
       background_effect: 'noise'
     }

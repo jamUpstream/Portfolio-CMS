@@ -263,11 +263,12 @@ export default function PortfolioHome() {
   const atlasSections = orderedSections.filter((section) => section.key !== 'skills');
   const cinemaSections = orderedSections.filter((section) => section.key !== 'projects');
   const cinemaHasProjects = orderedSections.some((section) => section.key === 'projects');
-  const mosaicSections = orderedSections.filter((section) => !['projects', 'skills'].includes(section.key));
   const folioSections = orderedSections.filter((section) => section.key !== 'projects');
   const folioHasProjects = orderedSections.some((section) => section.key === 'projects');
   const dispatchSections = orderedSections.filter((section) => !['projects'].includes(section.key));
   const dispatchHasProjects = orderedSections.some((section) => section.key === 'projects');
+  const fieldNotesSections = orderedSections.filter((section) => section.key !== 'projects');
+  const fieldNotesHasProjects = orderedSections.some((section) => section.key === 'projects');
 
   if (settings.portfolioTemplate === 'atlas') {
     return (
@@ -316,9 +317,9 @@ export default function PortfolioHome() {
     );
   }
 
-  if (settings.portfolioTemplate === 'exhibit') {
+  if (settings.portfolioTemplate === 'briefing') {
     return (
-      <ExhibitPortfolio
+      <BriefingPortfolio
         data={data}
         loading={loading}
         mode={mode}
@@ -331,14 +332,14 @@ export default function PortfolioHome() {
     );
   }
 
-  if (settings.portfolioTemplate === 'mosaic') {
+  if (settings.portfolioTemplate === 'fieldnotes') {
     return (
-      <MosaicPortfolio
+      <FieldNotesPortfolio
         data={data}
-        groupedSkills={groupedSkills}
         loading={loading}
         mode={mode}
-        orderedSections={mosaicSections}
+        orderedSections={fieldNotesSections}
+        showProjectsSection={fieldNotesHasProjects}
         profile={profile}
         settings={settings}
         showBackToTop={showBackToTop}
@@ -418,7 +419,7 @@ export default function PortfolioHome() {
             </div>
           </div>
           {settings.showHeroImage ? (
-            profile.avatar_url ? <img className="hero-avatar" src={profile.avatar_url} alt={profile.name} loading="eager" decoding="async" fetchPriority="high" /> : <div className="hero-mark" />
+            profile.avatar_url ? <img className="hero-avatar" src={profile.avatar_url} alt={profile.name} loading="eager" decoding="async" fetchpriority="high" /> : <div className="hero-mark" />
           ) : null}
         </section>
         {orderedSections.map((section) => section.node)}
@@ -513,7 +514,7 @@ function AtlasPortfolio({ data, groupedSkills, loading, mode, orderedSections, p
           <div className="atlas-sidebar-card">
             {settings.showHeroImage ? (
               profile.avatar_url
-                ? <img className="atlas-avatar" src={profile.avatar_url} alt={profile.name} loading="eager" decoding="async" fetchPriority="high" />
+                ? <img className="atlas-avatar" src={profile.avatar_url} alt={profile.name} loading="eager" decoding="async" fetchpriority="high" />
                 : <div className="atlas-avatar atlas-avatar-fallback" />
             ) : null}
             <p className="atlas-kicker">Independent portfolio</p>
@@ -626,7 +627,7 @@ function CinemaPortfolio({ data, loading, mode, orderedSections, profile, settin
       <main className="portfolio-shell cinema-shell" id="top">
         {loading ? <div className="portfolio-refreshing" aria-live="polite">Refreshing portfolio...</div> : null}
         <section className="cinema-hero reveal">
-          {heroVisual ? <img className="cinema-hero-media" src={heroVisual} alt={featuredProject?.title || profile.name || 'Portfolio hero'} loading="eager" decoding="async" fetchPriority="high" /> : null}
+          {heroVisual ? <img className="cinema-hero-media" src={heroVisual} alt={featuredProject?.title || profile.name || 'Portfolio hero'} loading="eager" decoding="async" fetchpriority="high" /> : null}
           <div className="cinema-hero-wash" />
           <div className="cinema-hero-copy">
             <p className="cinema-eyebrow">Now showing</p>
@@ -793,7 +794,7 @@ function ExhibitPortfolio({ data, loading, mode, orderedSections, profile, setti
         </section>
         {leadProject ? (
           <Link className="exhibit-lead reveal" to={`/projects/${leadProject.slug}`}>
-            {leadVisual ? <img src={leadVisual} alt={leadProject.title || profile.name || 'Lead visual'} loading="eager" decoding="async" fetchPriority="high" /> : null}
+            {leadVisual ? <img src={leadVisual} alt={leadProject.title || profile.name || 'Lead visual'} loading="eager" decoding="async" fetchpriority="high" /> : null}
             <div className="exhibit-lead-copy">
               <p className="exhibit-kicker">Lead work</p>
               <h2>{leadProject.title}</h2>
@@ -905,6 +906,176 @@ function MosaicPortfolio({ data, groupedSkills, loading, mode, orderedSections, 
   );
 }
 
+function BriefingPortfolio({ data, loading, mode, orderedSections, profile, settings, showBackToTop, toggleMode }) {
+  const featuredProject = data.projects?.[0] ?? null;
+  const briefingSummary = summarizeRichText(profile.bio || profile.tagline || '', 240);
+
+  return (
+    <div className={`portfolio-page portfolio-template-${settings.portfolioTemplate} portfolio-style-${settings.visualStyle} portfolio-bg-effect-${settings.backgroundEffect}`}>
+      <header className="site-nav briefing-nav">
+        <div className="site-nav-inner">
+          <a href="#top" className="font-heading text-2xl">{settings.headerText || profile.name || 'Portfolio'}</a>
+          <button className="icon-button" onClick={toggleMode} aria-label="Toggle dark mode">
+            {mode === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </button>
+        </div>
+      </header>
+      <main className="portfolio-shell briefing-shell" id="top">
+        {loading ? <div className="portfolio-refreshing" aria-live="polite">Refreshing portfolio...</div> : null}
+        <section className="briefing-cover reveal">
+          <div className="briefing-cover-copy">
+            <p className="briefing-kicker">Briefing deck</p>
+            <h1>{profile.name || 'Your Name'}</h1>
+            <p className="briefing-tagline">{profile.tagline || 'A presentation-style portfolio built as a sequence of concise, readable project and profile slides.'}</p>
+            {briefingSummary ? <p className="briefing-summary">{briefingSummary}</p> : null}
+            <div className="briefing-actions">
+              {settings.showHire ? <a className="button" href={`mailto:${profile.email}`}>Request a brief</a> : null}
+              <a className="button secondary" href="#briefing-slides">Open deck</a>
+              {profile.resume_url ? <a className="button secondary" href={profile.resume_url}>Resume</a> : null}
+            </div>
+          </div>
+          <aside className="briefing-agenda">
+            <p className="briefing-kicker">Agenda</p>
+            <div className="briefing-agenda-list">
+              {orderedSections.map((section, index) => (
+                <div className="briefing-agenda-item" key={section.key}>
+                  <span>{String(index + 1).padStart(2, '0')}</span>
+                  <strong>{sectionTitles[section.key] || section.key}</strong>
+                  <em>{getSectionCount(section.key, data, {}, profile)} items</em>
+                </div>
+              ))}
+            </div>
+          </aside>
+        </section>
+        {featuredProject ? (
+          <Link className="briefing-marquee reveal" to={`/projects/${featuredProject.slug}`}>
+            {featuredProject.cover_image_url ? <img src={featuredProject.cover_image_url} alt={featuredProject.title} loading="eager" decoding="async" fetchpriority="high" /> : null}
+            <div className="briefing-marquee-copy">
+              <p className="briefing-kicker">Featured project</p>
+              <h2>{featuredProject.title}</h2>
+              <p>{featuredProject.short_description}</p>
+            </div>
+            <div className="briefing-marquee-notes">
+              <span>{profile.location || 'Remote'}</span>
+              <span>{profile.availability_status || 'Available'}</span>
+              <span>{data.projects?.length ?? 0} projects</span>
+            </div>
+          </Link>
+        ) : null}
+        <div className="briefing-slides" id="briefing-slides">
+          {orderedSections.map((section, index) => (
+            <article className={`briefing-slide briefing-slide-${index % 3} reveal`} key={section.key}>
+              <div className="briefing-slide-head">
+                <div>
+                  <p className="briefing-step">Slide {String(index + 1).padStart(2, '0')}</p>
+                  <h2>{sectionTitles[section.key] || section.key}</h2>
+                </div>
+                <span className="briefing-slide-count">{getSectionCount(section.key, data, {}, profile)} items</span>
+              </div>
+              <div className="briefing-slide-body">
+                {section.node}
+              </div>
+            </article>
+          ))}
+        </div>
+      </main>
+      <a className={`back-to-top ${showBackToTop ? 'is-visible' : ''}`} href="#top" aria-label="Back to top" aria-hidden={!showBackToTop} tabIndex={showBackToTop ? 0 : -1}>
+        <ArrowUp className="h-4 w-4" />
+      </a>
+    </div>
+  );
+}
+
+function FieldNotesPortfolio({ data, loading, mode, orderedSections, profile, settings, showBackToTop, showProjectsSection, toggleMode }) {
+  const featuredProjects = data.projects?.slice(0, 5) ?? [];
+  const notesSummary = summarizeRichText(profile.bio || profile.tagline || '', 240);
+
+  return (
+    <div className={`portfolio-page portfolio-template-${settings.portfolioTemplate} portfolio-style-${settings.visualStyle} portfolio-bg-effect-${settings.backgroundEffect}`}>
+      <header className="site-nav notes-nav">
+        <div className="site-nav-inner">
+          <a href="#top" className="font-heading text-2xl">{settings.headerText || profile.name || 'Portfolio'}</a>
+          <button className="icon-button" onClick={toggleMode} aria-label="Toggle dark mode">
+            {mode === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </button>
+        </div>
+      </header>
+      <main className="portfolio-shell notes-shell" id="top">
+        {loading ? <div className="portfolio-refreshing" aria-live="polite">Refreshing portfolio...</div> : null}
+        <section className="notes-cover reveal">
+          <article className="notes-cover-card">
+            <p className="notes-kicker">Field notes</p>
+            <div className="notes-cover-head">
+              {settings.showHeroImage && profile.avatar_url ? <img className="notes-avatar" src={profile.avatar_url} alt={profile.name} loading="eager" decoding="async" fetchpriority="high" /> : null}
+              <div>
+                <h1>{profile.name || 'Your Name'}</h1>
+                <p className="notes-tagline">{profile.tagline || 'A notebook-style portfolio that reads like a working record, not a gallery wall.'}</p>
+              </div>
+            </div>
+            {notesSummary ? <p className="notes-summary">{notesSummary}</p> : null}
+            <div className="notes-actions">
+              {settings.showHire ? <a className="button" href={`mailto:${profile.email}`}>Open conversation</a> : null}
+              {profile.resume_url ? <a className="button secondary" href={profile.resume_url}>Resume</a> : null}
+            </div>
+          </article>
+          <aside className="notes-sidecard">
+            <p className="notes-kicker">Notebook index</p>
+            <div className="notes-facts">
+              <div><span>Base</span><strong>{profile.location || 'Remote'}</strong></div>
+              <div><span>Status</span><strong>{profile.availability_status || 'Available'}</strong></div>
+              <div><span>Projects</span><strong>{data.projects?.length ?? 0}</strong></div>
+              <div><span>Sections</span><strong>{orderedSections.length + (showProjectsSection ? 1 : 0)}</strong></div>
+            </div>
+            {data.socials?.length ? (
+              <div className="notes-socials">
+                {data.socials.map((social) => (
+                  <a key={social.id} href={social.url} aria-label={social.platform} className="icon-button"><Icon name={social.icon_name} /></a>
+                ))}
+              </div>
+            ) : null}
+          </aside>
+        </section>
+        {showProjectsSection && featuredProjects.length ? (
+          <section className="notes-board reveal" id="projects">
+            <div className="notes-board-head">
+              <p className="notes-kicker">Project notes</p>
+              <h2>Work in focus</h2>
+            </div>
+            <div className="notes-board-grid">
+              {featuredProjects.map((project, index) => (
+                <Link className={`notes-project notes-project-${index === 0 ? 'lead' : 'card'}`} key={project.id} to={`/projects/${project.slug}`}>
+                  {project.cover_image_url ? <img src={project.cover_image_url} alt={project.title} loading={index === 0 ? 'eager' : 'lazy'} decoding="async" /> : null}
+                  <div>
+                    <p className="notes-kicker">Project</p>
+                    <h3>{project.title}</h3>
+                    <p>{project.short_description}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        ) : null}
+        <div className="notes-pages">
+          {orderedSections.map((section, index) => (
+            <article className={`notes-page notes-page-${index % 2} reveal`} key={section.key}>
+              <div className="notes-page-margin">
+                <span>{String(index + 1).padStart(2, '0')}</span>
+                <p>{sectionTitles[section.key] || section.key}</p>
+              </div>
+              <div className="notes-page-body">
+                {section.node}
+              </div>
+            </article>
+          ))}
+        </div>
+      </main>
+      <a className={`back-to-top ${showBackToTop ? 'is-visible' : ''}`} href="#top" aria-label="Back to top" aria-hidden={!showBackToTop} tabIndex={showBackToTop ? 0 : -1}>
+        <ArrowUp className="h-4 w-4" />
+      </a>
+    </div>
+  );
+}
+
 function PanoramaPortfolio({ data, loading, mode, orderedSections, profile, settings, showBackToTop, toggleMode }) {
   const heroVisual = data.projects?.[0]?.cover_image_url || profile.avatar_url || '';
 
@@ -921,7 +1092,7 @@ function PanoramaPortfolio({ data, loading, mode, orderedSections, profile, sett
       <main className="portfolio-shell panorama-shell" id="top">
         {loading ? <div className="portfolio-refreshing" aria-live="polite">Refreshing portfolio...</div> : null}
         <section className="panorama-hero reveal">
-          {heroVisual ? <img className="panorama-hero-media" src={heroVisual} alt={profile.name || 'Portfolio hero'} loading="eager" decoding="async" fetchPriority="high" /> : null}
+          {heroVisual ? <img className="panorama-hero-media" src={heroVisual} alt={profile.name || 'Portfolio hero'} loading="eager" decoding="async" fetchpriority="high" /> : null}
           <div className="panorama-hero-copy">
             <p className="panorama-kicker">Panorama scenes</p>
             <h1>{profile.name || 'Your Name'}</h1>
@@ -988,7 +1159,7 @@ function FolioPortfolio({ data, groupedSkills, loading, mode, orderedSections, p
           </div>
           <div className="folio-masthead-copy">
             {settings.showHeroImage && profile.avatar_url ? (
-              <img className="folio-avatar" src={profile.avatar_url} alt={profile.name} loading="eager" decoding="async" fetchPriority="high" />
+              <img className="folio-avatar" src={profile.avatar_url} alt={profile.name} loading="eager" decoding="async" fetchpriority="high" />
             ) : null}
             <h1>{profile.name || 'Your Name'}</h1>
             <p className="folio-tagline">{profile.tagline || 'A file-cabinet archive of work, capabilities, and professional record.'}</p>
@@ -1177,7 +1348,7 @@ function DispatchPortfolio({ data, loading, mode, orderedSections, profile, sett
             </div>
             <div className="dispatch-front-sidebar">
               {settings.showHeroImage && profile.avatar_url ? (
-                <img className="dispatch-avatar" src={profile.avatar_url} alt={profile.name} loading="eager" decoding="async" fetchPriority="high" />
+                <img className="dispatch-avatar" src={profile.avatar_url} alt={profile.name} loading="eager" decoding="async" fetchpriority="high" />
               ) : null}
               <dl className="dispatch-byline">
                 <div><dt>By</dt><dd>{profile.name || 'Author'}</dd></div>
