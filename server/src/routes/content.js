@@ -101,6 +101,18 @@ const resumeImportSchema = {
   required: ['profile', 'experience', 'education', 'skills', 'certificates'],
   additionalProperties: false
 };
+const rewriteModes = {
+  improve: 'Improve clarity and grammar while keeping meaning and similar length.',
+  shorten: 'Shorten to the core message, around 40-60% of the original length.',
+  bullets: 'Rewrite as concise bullet points with strong action verbs.',
+  detailed: 'Expand with richer detail, context, and impact without inventing facts.'
+};
+const rewriteRequestSchema = z.object({
+  text: z.string().trim().min(8).max(12000),
+  mode: z.enum(['improve', 'shorten', 'bullets', 'detailed']).default('improve'),
+  format: z.enum(['plain', 'html']).default('plain'),
+  context: z.string().trim().max(120).optional()
+});
 
 function cleanPayload(payload) {
   return Object.fromEntries(
@@ -207,6 +219,56 @@ async function extractResumeWithGroq(text) {
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(payload.error?.message || `Groq request failed with ${response.status}`);
   return parseGroqJson(payload.choices?.[0]?.message?.content);
+}
+
+async function rewriteWithGroq({ text, mode, format, context }) {
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey) throw new Error('Missing GROQ_API_KEY in the server environment.');
+
+  const rewriteInstruction = rewriteModes[mode] || rewriteModes.improve;
+  const outputInstruction = format === 'html'
+    ? 'Return valid HTML only using <p>, <ul>, <ol>, and <li> as needed. Do not wrap output in markdown fences.'
+    : 'Return plain text only. Do not include markdown fences or extra labels.';
+
+  const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      model: process.env.GROQ_REWRITE_MODEL || process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
+      temperature: 0.35,
+      response_format: { type: 'json_object' },
+      messages: [
+        {
+          role: 'system',
+          content: [
+            'You rewrite portfolio/admin text.',
+            'Never invent facts that are not in the source text.',
+            'Return JSON only with one key: result.',
+            outputInstruction
+          ].join(' ')
+        },
+        {
+          role: 'user',
+          content: [
+            context ? `Context: ${context}` : 'Context: Portfolio project content',
+            `Mode: ${mode} (${rewriteInstruction})`,
+            'Source text:',
+            text
+          ].join('\n')
+        }
+      ]
+    })
+  });
+
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(payload.error?.message || `Groq request failed with ${response.status}`);
+  const parsed = parseGroqJson(payload.choices?.[0]?.message?.content);
+  const result = String(parsed?.result || '').trim();
+  if (!result) throw new Error('Groq rewrite returned an empty result.');
+  return result;
 }
 
 function isSchemaSetupError(error) {
@@ -317,6 +379,16 @@ router.post('/resume-import', authMiddleware, upload.single('file'), async (req,
 
     const extracted = await extractResumeWithGroq(resumeText);
     res.json({ extracted, source_text_length: resumeText.length });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post('/ai/rewrite', authMiddleware, async (req, res, next) => {
+  try {
+    const input = rewriteRequestSchema.parse(req.body ?? {});
+    const result = await rewriteWithGroq(input);
+    res.json({ result });
   } catch (error) {
     next(error);
   }

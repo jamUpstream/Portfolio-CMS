@@ -25,6 +25,34 @@ const defaultTheme = {
 };
 
 const defaultSectionOrder = ['about', 'services', 'projects', 'experience', 'education', 'skills', 'certificates', 'testimonials', 'contact'];
+const supportedPortfolioTemplates = new Set(['editorial', 'atlas', 'cinema', 'ledger', 'exhibit', 'mosaic', 'panorama', 'folio', 'dispatch']);
+const portfolioTemplateAliases = {
+  atelier: 'atlas',
+  studio: 'editorial',
+  noir: 'cinema',
+  index: 'ledger',
+  gallery: 'cinema',
+  resume: 'ledger',
+  brutalist: 'editorial',
+  magazine: 'editorial',
+  minimalist: 'editorial',
+  terminal: 'ledger',
+  luxe: 'cinema',
+  neon: 'cinema',
+  cards: 'atlas',
+  blueprint: 'ledger',
+  bento: 'atlas',
+  casefile: 'ledger',
+  monograph: 'ledger',
+  signal: 'ledger',
+  sonata: 'atlas',
+  ribbon: 'cinema',
+  'signal-paper': 'ledger',
+  archive: 'folio',
+  casebook: 'folio',
+  newspaper: 'dispatch',
+  press: 'dispatch'
+};
 let currentFontsKey = '';
 
 function normalizeSectionOrder(value) {
@@ -46,6 +74,12 @@ function ensurePreconnect(href, crossOrigin = false) {
   document.head.appendChild(link);
 }
 
+function normalizePortfolioTemplate(value) {
+  if (!value) return defaultTheme.portfolioTemplate;
+  if (supportedPortfolioTemplates.has(value)) return value;
+  return portfolioTemplateAliases[value] || defaultTheme.portfolioTemplate;
+}
+
 export function parsePortfolioSettings(settings = {}, mode = document.documentElement.dataset.theme || 'light') {
   const isDark = mode === 'dark';
   let visible = {};
@@ -61,7 +95,7 @@ export function parsePortfolioSettings(settings = {}, mode = document.documentEl
     surface: isDark ? (settings.theme_dark_surface_color || defaultTheme.darkSurface) : (settings.theme_surface_color || defaultTheme.lightSurface),
     heading: settings.font_heading || defaultTheme.heading,
     body: settings.font_body || defaultTheme.body,
-    portfolioTemplate: settings.portfolio_template || defaultTheme.portfolioTemplate,
+    portfolioTemplate: normalizePortfolioTemplate(settings.portfolio_template),
     visualStyle: settings.visual_style || defaultTheme.visualStyle,
     backgroundEffect: settings.background_effect || defaultTheme.backgroundEffect,
     heroTemplate: settings.hero_template || settings.hero_layout || defaultTheme.heroTemplate,

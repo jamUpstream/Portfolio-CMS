@@ -17,6 +17,7 @@ import {
   X
 } from 'lucide-react';
 import { api } from '../lib/api';
+import RichTextEditor from './RichTextEditor';
 
 const emptyImport = {
   profile: {},
@@ -116,13 +117,7 @@ function FieldControl({ label, value, onChange, type = 'text', placeholder = '' 
     <label className={`resume-import-field ${isTextarea ? 'full' : ''}`}>
       <span>{label}</span>
       {isTextarea ? (
-        <textarea
-          className="input"
-          value={value ?? ''}
-          placeholder={placeholder}
-          rows={5}
-          onChange={(event) => onChange(event.target.value)}
-        />
+        <RichTextEditor value={value ?? ''} onChange={onChange} />
       ) : (
         <input
           className="input"

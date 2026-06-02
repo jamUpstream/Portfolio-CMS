@@ -54,6 +54,7 @@ export const resources = {
     path: '/education',
     columns: ['institution', 'degree', 'field_of_study', 'sort_order'],
     imageFields: [{ name: 'logo_url', label: 'Logo', bucket: 'logos' }],
+    richFields: ['description'],
     schema: z.object({
       institution: z.string().min(1),
       degree: text,
@@ -100,6 +101,7 @@ export const resources = {
     singular: 'Service',
     path: '/services',
     columns: ['title', 'icon_name', 'sort_order'],
+    richFields: ['description'],
     schema: z.object({
       title: z.string().min(1),
       description: text,

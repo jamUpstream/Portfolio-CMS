@@ -59,28 +59,42 @@ const sectionLabels = {
 };
 const portfolioTemplates = [
   ['editorial', 'Editorial default'],
-  ['atelier', 'Atelier warm'],
-  ['studio', 'Studio clean'],
-  ['noir', 'Noir statement'],
-  ['index', 'Index / archive'],
-  ['gallery', 'Gallery showcase'],
-  ['resume', 'Resume / CV'],
-  ['brutalist', 'Brutalist grid'],
-  ['magazine', 'Magazine spread'],
-  ['minimalist', 'Quiet minimalist'],
-  ['terminal', 'Terminal mono'],
-  ['luxe', 'Luxury editorial'],
-  ['neon', 'Neon tech'],
-  ['cards', 'Card deck'],
-  ['blueprint', 'Blueprint grid'],
-  ['bento', 'Bento systems'],
-  ['casefile', 'Case file'],
-  ['monograph', 'Monograph'],
-  ['signal', 'Signal lab'],
-  ['sonata', 'Sonata serif'],
-  ['ribbon', 'Ribbon stage'],
-  ['signal-paper', 'Signal paper']
+  ['atlas', 'Atlas board'],
+  ['cinema', 'Cinema reel'],
+  ['ledger', 'Ledger dossier'],
+  ['exhibit', 'Exhibit wall'],
+  ['mosaic', 'Mosaic field'],
+  ['panorama', 'Panorama scenes'],
+  ['folio', 'Folio archive'],
+  ['dispatch', 'Dispatch press']
 ];
+const portfolioTemplateAliases = {
+  atelier: 'atlas',
+  studio: 'editorial',
+  noir: 'cinema',
+  index: 'ledger',
+  gallery: 'cinema',
+  resume: 'ledger',
+  brutalist: 'editorial',
+  magazine: 'editorial',
+  minimalist: 'editorial',
+  terminal: 'ledger',
+  luxe: 'cinema',
+  neon: 'cinema',
+  cards: 'atlas',
+  blueprint: 'ledger',
+  bento: 'atlas',
+  casefile: 'ledger',
+  monograph: 'ledger',
+  signal: 'ledger',
+  sonata: 'atlas',
+  ribbon: 'cinema',
+  'signal-paper': 'ledger',
+  archive: 'folio',
+  casebook: 'folio',
+  newspaper: 'dispatch',
+  press: 'dispatch'
+};
 const visualStyles = [
   ['default', 'Default'],
   ['glass', 'Glass']
@@ -149,7 +163,11 @@ const backgroundEffects = [
   ['galaxy', 'Galaxy'],
   ['aurora-flow', 'Aurora flow (animated)'],
   ['grid-drift', 'Grid drift (animated)'],
-  ['orbital', 'Orbital haze (animated)']
+  ['orbital', 'Orbital haze (animated)'],
+  ['constellation', 'Constellation pulse (animated)'],
+  ['tide', 'Tidal bands (animated)'],
+  ['prism', 'Prism sweep (animated)'],
+  ['radar', 'Radar field (animated)']
 ];
 const themePresets = [
   {
@@ -165,7 +183,7 @@ const themePresets = [
       theme_dark_surface_color: '#13263d',
       font_heading: 'DM Serif Display',
       font_body: 'Manrope',
-      portfolio_template: 'sonata',
+      portfolio_template: 'atlas',
       visual_style: 'default',
       background_effect: 'grid'
     }
@@ -183,7 +201,7 @@ const themePresets = [
       theme_dark_surface_color: '#342029',
       font_heading: 'Fraunces',
       font_body: 'Plus Jakarta Sans',
-      portfolio_template: 'ribbon',
+      portfolio_template: 'cinema',
       visual_style: 'default',
       background_effect: 'sunset'
     }
@@ -201,7 +219,7 @@ const themePresets = [
       theme_dark_surface_color: '#1b2f24',
       font_heading: 'Cormorant Garamond',
       font_body: 'Work Sans',
-      portfolio_template: 'atelier',
+      portfolio_template: 'atlas',
       visual_style: 'default',
       background_effect: 'canopy'
     }
@@ -219,7 +237,7 @@ const themePresets = [
       theme_dark_surface_color: '#171e33',
       font_heading: 'Syne',
       font_body: 'IBM Plex Sans',
-      portfolio_template: 'signal-paper',
+      portfolio_template: 'cinema',
       visual_style: 'glass',
       background_effect: 'aurora-flow'
     }
@@ -237,7 +255,7 @@ const themePresets = [
       theme_dark_surface_color: '#1e293b',
       font_heading: 'Plus Jakarta Sans',
       font_body: 'Public Sans',
-      portfolio_template: 'studio',
+      portfolio_template: 'editorial',
       visual_style: 'default',
       background_effect: 'plain'
     }
@@ -255,7 +273,7 @@ const themePresets = [
       theme_dark_surface_color: '#2b2018',
       font_heading: 'Fraunces',
       font_body: 'Manrope',
-      portfolio_template: 'editorial',
+      portfolio_template: 'cinema',
       visual_style: 'default',
       background_effect: 'sunset'
     }
@@ -273,7 +291,7 @@ const themePresets = [
       theme_dark_surface_color: '#12253f',
       font_heading: 'Source Serif 4',
       font_body: 'IBM Plex Sans',
-      portfolio_template: 'minimalist',
+      portfolio_template: 'editorial',
       visual_style: 'glass',
       background_effect: 'aurora'
     }
@@ -291,7 +309,7 @@ const themePresets = [
       theme_dark_surface_color: '#3b1d31',
       font_heading: 'Libre Baskerville',
       font_body: 'Karla',
-      portfolio_template: 'atelier',
+      portfolio_template: 'atlas',
       visual_style: 'default',
       background_effect: 'crosshatch'
     }
@@ -309,7 +327,7 @@ const themePresets = [
       theme_dark_surface_color: '#113328',
       font_heading: 'JetBrains Mono',
       font_body: 'IBM Plex Sans',
-      portfolio_template: 'signal',
+      portfolio_template: 'ledger',
       visual_style: 'default',
       background_effect: 'grid-drift'
     }
@@ -327,9 +345,117 @@ const themePresets = [
       theme_dark_surface_color: '#1a3323',
       font_heading: 'Cormorant Garamond',
       font_body: 'Nunito Sans',
-      portfolio_template: 'bento',
+      portfolio_template: 'atlas',
       visual_style: 'glass',
       background_effect: 'canopy'
+    }
+  },
+  {
+    key: 'prism-nights',
+    label: 'Prism Nights',
+    values: {
+      theme_primary_color: '#3b82f6',
+      theme_background_color: '#eef3ff',
+      theme_text_color: '#0f172a',
+      theme_surface_color: '#f8fbff',
+      theme_dark_background_color: '#0a1022',
+      theme_dark_text_color: '#e7ecff',
+      theme_dark_surface_color: '#141d35',
+      font_heading: 'Syne',
+      font_body: 'Manrope',
+      portfolio_template: 'panorama',
+      visual_style: 'glass',
+      background_effect: 'prism'
+    }
+  },
+  {
+    key: 'gallery-stone',
+    label: 'Gallery Stone',
+    values: {
+      theme_primary_color: '#8b5e34',
+      theme_background_color: '#f5f0ea',
+      theme_text_color: '#231b16',
+      theme_surface_color: '#fcfaf7',
+      theme_dark_background_color: '#16110d',
+      theme_dark_text_color: '#f1e6da',
+      theme_dark_surface_color: '#261f1a',
+      font_heading: 'Libre Baskerville',
+      font_body: 'Public Sans',
+      portfolio_template: 'mosaic',
+      visual_style: 'default',
+      background_effect: 'noise'
+    }
+  },
+  {
+    key: 'radar-bloom',
+    label: 'Radar Bloom',
+    values: {
+      theme_primary_color: '#14b8a6',
+      theme_background_color: '#ebfcf8',
+      theme_text_color: '#08201c',
+      theme_surface_color: '#f6fffd',
+      theme_dark_background_color: '#061816',
+      theme_dark_text_color: '#d4fff4',
+      theme_dark_surface_color: '#0f2925',
+      font_heading: 'JetBrains Mono',
+      font_body: 'IBM Plex Sans',
+      portfolio_template: 'panorama',
+      visual_style: 'default',
+      background_effect: 'radar'
+    }
+  },
+  {
+    key: 'porcelain-index',
+    label: 'Porcelain Index',
+    values: {
+      theme_primary_color: '#475569',
+      theme_background_color: '#f8fafc',
+      theme_text_color: '#111827',
+      theme_surface_color: '#ffffff',
+      theme_dark_background_color: '#0f172a',
+      theme_dark_text_color: '#e2e8f0',
+      theme_dark_surface_color: '#1e293b',
+      font_heading: 'Source Serif 4',
+      font_body: 'Plus Jakarta Sans',
+      portfolio_template: 'ledger',
+      visual_style: 'default',
+      background_effect: 'constellation'
+    }
+  },
+  {
+    key: 'classified-file',
+    label: 'Classified File',
+    values: {
+      theme_primary_color: '#92400e',
+      theme_background_color: '#fdf8f0',
+      theme_text_color: '#1c1611',
+      theme_surface_color: '#fffdf8',
+      theme_dark_background_color: '#181208',
+      theme_dark_text_color: '#f5e9d4',
+      theme_dark_surface_color: '#25190e',
+      font_heading: 'Libre Baskerville',
+      font_body: 'IBM Plex Sans',
+      portfolio_template: 'folio',
+      visual_style: 'default',
+      background_effect: 'crosshatch'
+    }
+  },
+  {
+    key: 'morning-edition',
+    label: 'Morning Edition',
+    values: {
+      theme_primary_color: '#b91c1c',
+      theme_background_color: '#fafaf9',
+      theme_text_color: '#111113',
+      theme_surface_color: '#ffffff',
+      theme_dark_background_color: '#111111',
+      theme_dark_text_color: '#e7e5e0',
+      theme_dark_surface_color: '#1c1c1c',
+      font_heading: 'Playfair Display',
+      font_body: 'Source Serif 4',
+      portfolio_template: 'dispatch',
+      visual_style: 'default',
+      background_effect: 'plain'
     }
   }
 ];
@@ -342,6 +468,12 @@ const defaultColors = {
   theme_dark_text_color: '#f4eadc',
   theme_dark_surface_color: '#1f1b17'
 };
+
+function normalizePortfolioTemplate(value) {
+  if (!value) return 'editorial';
+  if (portfolioTemplates.some(([template]) => template === value)) return value;
+  return portfolioTemplateAliases[value] || 'editorial';
+}
 
 function normalizeSectionOrder(value) {
   let parsed = [];
@@ -374,6 +506,8 @@ export default function SettingsPage() {
   const [lastSyncedAt, setLastSyncedAt] = useState(null);
   const { mode } = useTheme();
   const { register, handleSubmit, reset, control, watch } = useForm();
+  const selectedTemplate = watch('portfolio_template');
+  const heroControlsEnabled = selectedTemplate === 'editorial';
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(TouchSensor, { activationConstraint: { delay: 160, tolerance: 8 } }),
@@ -394,7 +528,7 @@ export default function SettingsPage() {
         theme_dark_surface_color: settings.theme_dark_surface_color ?? defaultColors.theme_dark_surface_color,
         font_heading: settings.font_heading ?? 'Playfair Display',
         font_body: settings.font_body ?? 'Manrope',
-        portfolio_template: settings.portfolio_template ?? 'editorial',
+        portfolio_template: normalizePortfolioTemplate(settings.portfolio_template),
         visual_style: settings.visual_style ?? 'default',
         background_effect: settings.background_effect ?? 'plain',
         hero_template: settings.hero_template ?? settings.hero_layout ?? 'split',
@@ -583,41 +717,41 @@ export default function SettingsPage() {
         </label>
         <label className="field">
           <span>Hero template</span>
-          <select className="input" {...register('hero_template')}>
+          <select className="input" disabled={!heroControlsEnabled} {...register('hero_template')}>
             {heroTemplates.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
           </select>
         </label>
         <label className="field">
           <span>Hero heading position</span>
-          <select className="input" {...register('hero_heading_position')}>
+          <select className="input" disabled={!heroControlsEnabled} {...register('hero_heading_position')}>
             {heroAlignmentOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
           </select>
         </label>
         <label className="field">
           <span>Hero tagline position</span>
-          <select className="input" {...register('hero_tagline_position')}>
+          <select className="input" disabled={!heroControlsEnabled} {...register('hero_tagline_position')}>
             {heroAlignmentOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
           </select>
         </label>
         <label className="field">
           <span>Hero button position</span>
-          <select className="input" {...register('hero_button_position')}>
+          <select className="input" disabled={!heroControlsEnabled} {...register('hero_button_position')}>
             {heroButtonPositions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
           </select>
         </label>
         <label className="field">
           <span>Hero text size</span>
-          <select className="input" {...register('hero_text_size')}>
+          <select className="input" disabled={!heroControlsEnabled} {...register('hero_text_size')}>
             {heroTextSizes.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
           </select>
         </label>
         <label className="field">
           <span>Hero image shape</span>
-          <select className="input" {...register('hero_image_shape')}>
+          <select className="input" disabled={!heroControlsEnabled} {...register('hero_image_shape')}>
             {heroImageShapes.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
           </select>
         </label>
-        <small className="field-hint settings-grid-note">Portfolio template sets the overall spacing, surfaces, and section feel. Colors and hero controls still override it.</small>
+        <small className="field-hint settings-grid-note">Hero controls only apply to Editorial default. Structural templates use their own built-in layout system.</small>
       </div>
       <div>
         <span className="field-label">Background effect</span>
@@ -632,8 +766,8 @@ export default function SettingsPage() {
         </div>
         <small className="field-hint mt-2 block">Static portfolio background pattern. Plain uses your selected background color with no added pattern.</small>
       </div>
-      <label className="check-field">
-        <input type="checkbox" {...register('show_hero_image')} />
+      <label className={`check-field ${heroControlsEnabled ? '' : 'is-disabled'}`}>
+        <input type="checkbox" disabled={!heroControlsEnabled} {...register('show_hero_image')} />
         Show hero picture / visual
       </label>
       <div>

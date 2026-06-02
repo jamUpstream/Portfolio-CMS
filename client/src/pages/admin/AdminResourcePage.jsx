@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, Controller } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import { Plus, X } from 'lucide-react';
+import { Plus, Sparkles, X } from 'lucide-react';
 import { api } from '../../lib/api';
 import { normalizePayload, resources, toFormValues } from '../../lib/resources';
 import RichTextEditor from '../../components/RichTextEditor';
@@ -33,6 +33,12 @@ export default function AdminResourcePage({ resourceKey }) {
   const [bulkDelete, setBulkDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
+  const [aiRewriteOpen, setAiRewriteOpen] = useState(false);
+  const [aiTargetField, setAiTargetField] = useState(null);
+  const [aiMode, setAiMode] = useState('improve');
+  const [aiResult, setAiResult] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState('');
   const lastError = useRef('');
   const defaults = useMemo(() => Object.fromEntries(Object.keys(config.schema.shape).map((key) => {
     if (key === 'status') return [key, 'draft'];
@@ -48,6 +54,8 @@ export default function AdminResourcePage({ resourceKey }) {
 
   const watchedTitle = watch('title');
   const watchedSlug = watch('slug');
+  const watchedShortDescription = watch('short_description');
+  const watchedDescription = watch('description');
 
   useEffect(() => {
     if (resourceKey !== 'projects' || slugManuallyEdited) return;
@@ -95,7 +103,75 @@ export default function AdminResourcePage({ resourceKey }) {
     setFormOpen(false);
     setEditing(null);
     setSlugManuallyEdited(false);
+    setAiRewriteOpen(false);
+    setAiTargetField(null);
+    setAiResult('');
+    setAiError('');
+    setAiLoading(false);
+    setAiMode('improve');
     reset(defaults);
+  }
+
+  function openAiRewrite(fieldName) {
+    setAiTargetField(fieldName);
+    setAiMode('improve');
+    setAiResult('');
+    setAiError('');
+    setAiRewriteOpen(true);
+  }
+
+  function closeAiRewrite() {
+    setAiRewriteOpen(false);
+    setAiTargetField(null);
+    setAiResult('');
+    setAiError('');
+    setAiLoading(false);
+    setAiMode('improve');
+  }
+
+  function getAiSourceText() {
+    if (aiTargetField === 'description') return String(watchedDescription || '').trim();
+    if (aiTargetField === 'short_description') return String(watchedShortDescription || '').trim();
+    return '';
+  }
+
+  async function generateAiRewrite() {
+    const sourceText = getAiSourceText();
+    if (!aiTargetField) return;
+    if (sourceText.length < 8) {
+      setAiError('Add more text first, then try Rewrite with AI.');
+      return;
+    }
+
+    setAiLoading(true);
+    setAiError('');
+    try {
+      const response = await api.post('/ai/rewrite', {
+        text: sourceText,
+        mode: aiMode,
+        format: aiTargetField === 'description' ? 'html' : 'plain',
+        context: aiTargetField === 'description'
+          ? 'Portfolio project long description'
+          : 'Portfolio project short description'
+      });
+      const result = String(response?.result || '').trim();
+      if (!result) {
+        setAiError('The AI response was empty. Please generate again.');
+        return;
+      }
+      setAiResult(result);
+    } catch (error) {
+      setAiError(error.message || 'Failed to rewrite text.');
+    } finally {
+      setAiLoading(false);
+    }
+  }
+
+  function applyAiRewrite() {
+    if (!aiTargetField || !aiResult) return;
+    setValue(aiTargetField, aiResult, { shouldDirty: true, shouldValidate: true });
+    toast.success('AI rewrite applied');
+    closeAiRewrite();
   }
 
   async function save(values) {
@@ -173,6 +249,7 @@ export default function AdminResourcePage({ resourceKey }) {
               {formFields.map((name) => {
                 const image = config.imageFields?.find((field) => field.name === name);
                 const rich = config.richFields?.includes(name);
+                const aiRewritable = resourceKey === 'projects' && ['short_description', 'description'].includes(name);
                 if (image) {
                   if (image.multiple) {
                     return (
@@ -206,6 +283,13 @@ export default function AdminResourcePage({ resourceKey }) {
                     <div className="field" key={name}>
                       <span>{name.replaceAll('_', ' ')}</span>
                       <Controller control={control} name={name} render={({ field }) => <RichTextEditor value={field.value} onChange={field.onChange} />} />
+                      {aiRewritable ? (
+                        <div className="field-actions-inline">
+                          <button type="button" className="button secondary compact-button" onClick={() => openAiRewrite(name)}>
+                            <Sparkles className="h-4 w-4" /> Rewrite with AI
+                          </button>
+                        </div>
+                      ) : null}
                     </div>
                   );
                 }
@@ -240,6 +324,13 @@ export default function AdminResourcePage({ resourceKey }) {
                     />
                     {isProjectSlug ? <small className="field-hint">Auto-generated from the project title unless you edit it.</small> : null}
                     {name.endsWith('_date') ? <small className="field-hint">Use a year, month, full date, or leave blank / type Present for ongoing.</small> : null}
+                    {aiRewritable ? (
+                      <div className="field-actions-inline">
+                        <button type="button" className="button secondary compact-button" onClick={() => openAiRewrite(name)}>
+                          <Sparkles className="h-4 w-4" /> Rewrite with AI
+                        </button>
+                      </div>
+                    ) : null}
                     {errors[name] ? <small className="text-red-600">{errors[name].message}</small> : null}
                   </label>
                 );
@@ -248,6 +339,51 @@ export default function AdminResourcePage({ resourceKey }) {
             <div className="admin-form-modal-actions">
               <button className="button secondary" type="button" onClick={closeForm}>Cancel</button>
               <button className="button" type="submit" form="admin-resource-form">Save {config.singular}</button>
+            </div>
+          </section>
+        </div>
+      ) : null}
+      {aiRewriteOpen ? (
+        <div className="admin-form-modal-layer ai-rewrite-modal-layer" role="presentation">
+          <button className="admin-form-modal-backdrop" type="button" onClick={closeAiRewrite} aria-label="Close AI rewrite" />
+          <section className="admin-form-modal ai-rewrite-modal" role="dialog" aria-modal="true" aria-labelledby="ai-rewrite-title">
+            <div className="admin-form-modal-header">
+              <h3 id="ai-rewrite-title" className="font-heading text-2xl">Rewrite with AI</h3>
+              <button className="icon-button" type="button" onClick={closeAiRewrite} aria-label="Close AI rewrite">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="admin-form-modal-body ai-rewrite-modal-body">
+              <label className="field">
+                <span>Rewrite mode</span>
+                <select className="input" value={aiMode} onChange={(event) => setAiMode(event.target.value)}>
+                  <option value="improve">Improve</option>
+                  <option value="shorten">Shorten</option>
+                  <option value="bullets">Bullets</option>
+                  <option value="detailed">More detailed</option>
+                </select>
+              </label>
+              <label className="field">
+                <span>Source text</span>
+                <textarea className="input ai-rewrite-source" value={getAiSourceText()} readOnly />
+              </label>
+              <label className="field">
+                <span>Generated result</span>
+                <textarea
+                  className="input ai-rewrite-output"
+                  value={aiResult}
+                  onChange={(event) => setAiResult(event.target.value)}
+                  placeholder="Generate a rewrite to preview it here."
+                />
+              </label>
+              {aiError ? <p className="text-red-600 text-sm">{aiError}</p> : null}
+            </div>
+            <div className="admin-form-modal-actions">
+              <button className="button secondary" type="button" onClick={closeAiRewrite}>Cancel</button>
+              <button className="button secondary" type="button" onClick={generateAiRewrite} disabled={aiLoading}>
+                {aiLoading ? 'Generating...' : aiResult ? 'Generate again' : 'Generate'}
+              </button>
+              <button className="button" type="button" onClick={applyAiRewrite} disabled={!aiResult}>Apply rewrite</button>
             </div>
           </section>
         </div>
