@@ -4473,6 +4473,49 @@ select.input,
   text-transform: uppercase;
 }
 
+.portfolio-template-atlas .section-experience .timeline,
+.portfolio-template-atlas .section-education .timeline {
+  gap: 0;
+  border-top: 1px solid color-mix(in srgb, var(--color-ink) 16%, transparent);
+}
+
+.portfolio-template-atlas .section-experience .timeline article,
+.portfolio-template-atlas .section-education .timeline article {
+  display: grid;
+  grid-template-columns: minmax(130px, 180px) minmax(0, 1fr);
+  gap: 0.25rem 1.35rem;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-ink) 16%, transparent);
+  border-radius: 0;
+  padding: 1.05rem 0;
+  background: transparent;
+}
+
+.portfolio-template-atlas .section-experience .timeline article > span,
+.portfolio-template-atlas .section-education .timeline article > span {
+  grid-row: 1 / span 3;
+}
+
+.portfolio-template-atlas .section-experience .timeline h3,
+.portfolio-template-atlas .section-education .timeline h3 {
+  font-size: 1.32rem;
+  line-height: 1.08;
+}
+
+.portfolio-template-atlas .section-experience .timeline article > p,
+.portfolio-template-atlas .section-education .timeline article > p {
+  margin: 0;
+  color: color-mix(in srgb, var(--color-ink) 70%, transparent);
+  font-weight: 700;
+}
+
+.portfolio-template-atlas .section-experience .timeline .rich-text,
+.portfolio-template-atlas .section-education .timeline .rich-text {
+  max-width: 66rem;
+  margin-top: 0.45rem;
+  line-height: 1.65;
+}
+
 .atlas-skill-bank {
   padding: 1.3rem;
 }
@@ -8090,6 +8133,19 @@ select.input,
 
   .portfolio-template-atlas .section-projects .work-card {
     min-height: 0;
+  }
+
+  .portfolio-template-atlas .section-experience .timeline article,
+  .portfolio-template-atlas .section-education .timeline article {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+    padding: 1rem 0;
+  }
+
+  .portfolio-template-atlas .section-experience .timeline article > span,
+  .portfolio-template-atlas .section-education .timeline article > span {
+    grid-row: auto;
+    margin-bottom: 0.15rem;
   }
 
   .cinema-hero,
