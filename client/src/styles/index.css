@@ -4723,6 +4723,54 @@ select.input,
   background: color-mix(in srgb, var(--color-paper) 82%, var(--color-surface));
 }
 
+.portfolio-template-cinema .section-experience .timeline,
+.portfolio-template-cinema .section-education .timeline {
+  gap: 0;
+  border-top: 1px solid color-mix(in srgb, var(--color-ink) 16%, transparent);
+}
+
+.portfolio-template-cinema .section-experience .timeline article,
+.portfolio-template-cinema .section-education .timeline article {
+  display: grid;
+  grid-template-columns: minmax(130px, 180px) minmax(0, 1fr);
+  gap: 0.25rem 1.5rem;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-ink) 16%, transparent);
+  border-radius: 0;
+  padding: 1.15rem 0;
+  background: transparent;
+}
+
+.portfolio-template-cinema .section-experience .timeline article > span,
+.portfolio-template-cinema .section-education .timeline article > span {
+  grid-row: 1 / span 3;
+  color: color-mix(in srgb, var(--color-ink) 58%, transparent);
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.portfolio-template-cinema .section-experience .timeline h3,
+.portfolio-template-cinema .section-education .timeline h3 {
+  font-size: 1.35rem;
+  line-height: 1.08;
+}
+
+.portfolio-template-cinema .section-experience .timeline article > p,
+.portfolio-template-cinema .section-education .timeline article > p {
+  margin: 0;
+  color: color-mix(in srgb, var(--color-ink) 70%, transparent);
+  font-weight: 700;
+}
+
+.portfolio-template-cinema .section-experience .timeline .rich-text,
+.portfolio-template-cinema .section-education .timeline .rich-text {
+  max-width: 68rem;
+  margin-top: 0.45rem;
+  line-height: 1.65;
+}
+
 .portfolio-template-ledger .portfolio-shell {
   width: min(1340px, calc(100% - 28px));
 }
@@ -4902,6 +4950,54 @@ select.input,
   min-height: 0;
   border-radius: 0.85rem;
   background: color-mix(in srgb, var(--color-paper) 86%, var(--color-surface));
+}
+
+.portfolio-template-ledger .section-experience .timeline,
+.portfolio-template-ledger .section-education .timeline {
+  gap: 0;
+  border-top: 1px solid color-mix(in srgb, var(--color-ink) 16%, transparent);
+}
+
+.portfolio-template-ledger .section-experience .timeline article,
+.portfolio-template-ledger .section-education .timeline article {
+  display: grid;
+  grid-template-columns: minmax(120px, 170px) minmax(0, 1fr);
+  gap: 0.25rem 1.25rem;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-ink) 16%, transparent);
+  border-radius: 0;
+  padding: 1rem 0;
+  background: transparent;
+}
+
+.portfolio-template-ledger .section-experience .timeline article > span,
+.portfolio-template-ledger .section-education .timeline article > span {
+  grid-row: 1 / span 3;
+  color: color-mix(in srgb, var(--color-ink) 58%, transparent);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.portfolio-template-ledger .section-experience .timeline h3,
+.portfolio-template-ledger .section-education .timeline h3 {
+  font-size: 1.3rem;
+  line-height: 1.08;
+}
+
+.portfolio-template-ledger .section-experience .timeline article > p,
+.portfolio-template-ledger .section-education .timeline article > p {
+  margin: 0;
+  color: color-mix(in srgb, var(--color-ink) 70%, transparent);
+  font-weight: 700;
+}
+
+.portfolio-template-ledger .section-experience .timeline .rich-text,
+.portfolio-template-ledger .section-education .timeline .rich-text {
+  max-width: 64rem;
+  margin-top: 0.45rem;
+  line-height: 1.65;
 }
 
 .portfolio-template-exhibit .portfolio-shell {
@@ -5374,12 +5470,36 @@ select.input,
   line-height: 1.45;
 }
 
-.briefing-summary {
-  max-width: 42rem;
+.briefing-highlights {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.55rem;
+  max-width: 36rem;
   margin: 1rem 0 0;
-  font-size: 0.96rem;
-  line-height: 1.7;
-  color: color-mix(in srgb, var(--color-ink) 72%, transparent);
+}
+
+.briefing-highlights div {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--color-ink) 12%, transparent);
+  border-radius: 0.7rem;
+  background: color-mix(in srgb, var(--color-paper) 72%, var(--color-surface));
+}
+
+.briefing-highlights strong {
+  font-family: var(--font-heading), serif;
+  font-size: 1.35rem;
+  line-height: 1;
+  color: var(--color-ink);
+}
+
+.briefing-highlights span {
+  color: color-mix(in srgb, var(--color-ink) 58%, transparent);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 .briefing-actions,
@@ -5546,6 +5666,54 @@ select.input,
   background: color-mix(in srgb, var(--color-paper) 84%, var(--color-surface));
 }
 
+.portfolio-template-briefing .section-experience .timeline,
+.portfolio-template-briefing .section-education .timeline {
+  gap: 0;
+  border-top: 1px solid color-mix(in srgb, var(--color-ink) 16%, transparent);
+}
+
+.portfolio-template-briefing .section-experience .timeline article,
+.portfolio-template-briefing .section-education .timeline article {
+  display: grid;
+  grid-template-columns: minmax(130px, 180px) minmax(0, 1fr);
+  gap: 0.25rem 1.35rem;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-ink) 16%, transparent);
+  border-radius: 0;
+  padding: 1.05rem 0;
+  background: transparent;
+}
+
+.portfolio-template-briefing .section-experience .timeline article > span,
+.portfolio-template-briefing .section-education .timeline article > span {
+  grid-row: 1 / span 3;
+  color: color-mix(in srgb, var(--color-ink) 58%, transparent);
+  font-size: 0.84rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.portfolio-template-briefing .section-experience .timeline h3,
+.portfolio-template-briefing .section-education .timeline h3 {
+  font-size: 1.32rem;
+  line-height: 1.08;
+}
+
+.portfolio-template-briefing .section-experience .timeline article > p,
+.portfolio-template-briefing .section-education .timeline article > p {
+  margin: 0;
+  color: color-mix(in srgb, var(--color-ink) 70%, transparent);
+  font-weight: 700;
+}
+
+.portfolio-template-briefing .section-experience .timeline .rich-text,
+.portfolio-template-briefing .section-education .timeline .rich-text {
+  max-width: 66rem;
+  margin-top: 0.45rem;
+  line-height: 1.65;
+}
+
 .portfolio-template-fieldnotes .portfolio-shell {
   width: min(1280px, calc(100% - 24px));
 }
@@ -5611,12 +5779,36 @@ select.input,
   line-height: 1.5;
 }
 
-.notes-summary {
-  max-width: 48rem;
+.notes-signals {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
   margin: 1rem 0 0;
-  font-size: 0.96rem;
-  line-height: 1.7;
-  color: color-mix(in srgb, var(--color-ink) 72%, transparent);
+}
+
+.notes-signals div {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+  padding: 0.7rem 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--color-ink) 12%, transparent);
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--color-paper) 72%, var(--color-surface));
+}
+
+.notes-signals span {
+  color: color-mix(in srgb, var(--color-ink) 56%, transparent);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.notes-signals strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 0.92rem;
+  line-height: 1.25;
 }
 
 .notes-sidecard {
@@ -5771,6 +5963,54 @@ select.input,
   min-height: 0;
   border-radius: 0.85rem;
   background: color-mix(in srgb, var(--color-paper) 82%, var(--color-surface));
+}
+
+.portfolio-template-fieldnotes .section-experience .timeline,
+.portfolio-template-fieldnotes .section-education .timeline {
+  gap: 0;
+  border-top: 1px solid color-mix(in srgb, var(--color-ink) 16%, transparent);
+}
+
+.portfolio-template-fieldnotes .section-experience .timeline article,
+.portfolio-template-fieldnotes .section-education .timeline article {
+  display: grid;
+  grid-template-columns: minmax(130px, 180px) minmax(0, 1fr);
+  gap: 0.25rem 1.35rem;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-ink) 16%, transparent);
+  border-radius: 0;
+  padding: 1.05rem 0;
+  background: transparent;
+}
+
+.portfolio-template-fieldnotes .section-experience .timeline article > span,
+.portfolio-template-fieldnotes .section-education .timeline article > span {
+  grid-row: 1 / span 3;
+  color: color-mix(in srgb, var(--color-ink) 58%, transparent);
+  font-size: 0.84rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.portfolio-template-fieldnotes .section-experience .timeline h3,
+.portfolio-template-fieldnotes .section-education .timeline h3 {
+  font-size: 1.32rem;
+  line-height: 1.08;
+}
+
+.portfolio-template-fieldnotes .section-experience .timeline article > p,
+.portfolio-template-fieldnotes .section-education .timeline article > p {
+  margin: 0;
+  color: color-mix(in srgb, var(--color-ink) 70%, transparent);
+  font-weight: 700;
+}
+
+.portfolio-template-fieldnotes .section-experience .timeline .rich-text,
+.portfolio-template-fieldnotes .section-education .timeline .rich-text {
+  max-width: 66rem;
+  margin-top: 0.45rem;
+  line-height: 1.65;
 }
 
 .portfolio-template-panorama .portfolio-shell {
@@ -5931,6 +6171,54 @@ select.input,
   min-height: 0;
   border-radius: 0.85rem;
   background: color-mix(in srgb, var(--color-paper) 84%, var(--color-surface));
+}
+
+.portfolio-template-panorama .section-experience .timeline,
+.portfolio-template-panorama .section-education .timeline {
+  gap: 0;
+  border-top: 1px solid color-mix(in srgb, var(--color-ink) 16%, transparent);
+}
+
+.portfolio-template-panorama .section-experience .timeline article,
+.portfolio-template-panorama .section-education .timeline article {
+  display: grid;
+  grid-template-columns: minmax(130px, 180px) minmax(0, 1fr);
+  gap: 0.25rem 1.35rem;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-ink) 16%, transparent);
+  border-radius: 0;
+  padding: 1.05rem 0;
+  background: transparent;
+}
+
+.portfolio-template-panorama .section-experience .timeline article > span,
+.portfolio-template-panorama .section-education .timeline article > span {
+  grid-row: 1 / span 3;
+  color: color-mix(in srgb, var(--color-ink) 58%, transparent);
+  font-size: 0.84rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.portfolio-template-panorama .section-experience .timeline h3,
+.portfolio-template-panorama .section-education .timeline h3 {
+  font-size: 1.32rem;
+  line-height: 1.08;
+}
+
+.portfolio-template-panorama .section-experience .timeline article > p,
+.portfolio-template-panorama .section-education .timeline article > p {
+  margin: 0;
+  color: color-mix(in srgb, var(--color-ink) 70%, transparent);
+  font-weight: 700;
+}
+
+.portfolio-template-panorama .section-experience .timeline .rich-text,
+.portfolio-template-panorama .section-education .timeline .rich-text {
+  max-width: 66rem;
+  margin-top: 0.45rem;
+  line-height: 1.65;
 }
 
 .timeline article {
@@ -6365,18 +6653,11 @@ select.input,
 
 .folio-tagline {
   margin: 0;
-  font-size: clamp(0.95rem, 1.5vw, 1.15rem);
-  color: color-mix(in srgb, var(--color-ink) 72%, transparent);
-  max-width: 38rem;
-  line-height: 1.5;
-}
-
-.folio-summary {
-  margin: 0;
-  max-width: 44rem;
-  font-size: 0.92rem;
-  line-height: 1.7;
-  color: color-mix(in srgb, var(--color-ink) 64%, transparent);
+  max-width: 46rem;
+  font-size: 1.2rem;
+  font-weight: 500;
+  line-height: 1.42;
+  color: color-mix(in srgb, var(--color-ink) 78%, transparent);
 }
 
 .folio-masthead-meta {
@@ -7841,6 +8122,19 @@ select.input,
     padding-top: 3rem;
   }
 
+  .portfolio-template-cinema .section-experience .timeline article,
+  .portfolio-template-cinema .section-education .timeline article {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+    padding: 1rem 0;
+  }
+
+  .portfolio-template-cinema .section-experience .timeline article > span,
+  .portfolio-template-cinema .section-education .timeline article > span {
+    grid-row: auto;
+    margin-bottom: 0.15rem;
+  }
+
   .ledger-sidebar {
     position: static;
     top: auto;
@@ -7848,6 +8142,58 @@ select.input,
 
   .ledger-chapter-meta {
     padding-top: 0;
+  }
+
+  .portfolio-template-ledger .section-experience .timeline article,
+  .portfolio-template-ledger .section-education .timeline article {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+    padding: 0.95rem 0;
+  }
+
+  .portfolio-template-ledger .section-experience .timeline article > span,
+  .portfolio-template-ledger .section-education .timeline article > span {
+    grid-row: auto;
+    margin-bottom: 0.15rem;
+  }
+
+  .portfolio-template-panorama .section-experience .timeline article,
+  .portfolio-template-panorama .section-education .timeline article {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+    padding: 1rem 0;
+  }
+
+  .portfolio-template-panorama .section-experience .timeline article > span,
+  .portfolio-template-panorama .section-education .timeline article > span {
+    grid-row: auto;
+    margin-bottom: 0.15rem;
+  }
+
+  .portfolio-template-briefing .section-experience .timeline article,
+  .portfolio-template-briefing .section-education .timeline article {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+    padding: 1rem 0;
+  }
+
+  .portfolio-template-briefing .section-experience .timeline article > span,
+  .portfolio-template-briefing .section-education .timeline article > span {
+    grid-row: auto;
+    margin-bottom: 0.15rem;
+  }
+
+  .portfolio-template-fieldnotes .section-experience .timeline article,
+  .portfolio-template-fieldnotes .section-education .timeline article {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+    padding: 1rem 0;
+  }
+
+  .portfolio-template-fieldnotes .section-experience .timeline article > span,
+  .portfolio-template-fieldnotes .section-education .timeline article > span {
+    grid-row: auto;
+    margin-bottom: 0.15rem;
   }
 
   .exhibit-cover-note {
@@ -7922,8 +8268,7 @@ select.input,
     font-size: clamp(2rem, 9vw, 2.6rem);
   }
 
-  .folio-tagline,
-  .folio-summary {
+  .folio-tagline {
     max-width: none;
   }
 
@@ -8252,13 +8597,8 @@ select.input,
   }
 
   .folio-tagline {
-    font-size: 0.98rem;
+    font-size: 1.05rem;
     line-height: 1.45;
-  }
-
-  .folio-summary {
-    font-size: 0.88rem;
-    line-height: 1.55;
   }
 
   .folio-masthead-actions {
@@ -8325,6 +8665,19 @@ select.input,
     font-size: 0.98rem;
   }
 
+  .briefing-highlights {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: none;
+  }
+
+  .briefing-highlights div {
+    padding: 0.55rem 0.65rem;
+  }
+
+  .briefing-highlights strong {
+    font-size: 1.15rem;
+  }
+
   .briefing-actions,
   .notes-actions {
     flex-direction: column;
@@ -8360,6 +8713,10 @@ select.input,
 
   .notes-cover-card h1 {
     font-size: clamp(2rem, 9vw, 2.8rem);
+  }
+
+  .notes-signals {
+    grid-template-columns: 1fr;
   }
 
   .notes-board-head h2,

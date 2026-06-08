@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowUp, Moon, Sun } from 'lucide-react';
 import Icon from '../components/Icon';
@@ -129,6 +129,15 @@ function getSectionCount(sectionKey, data, groupedSkills, profile) {
     default:
       return 0;
   }
+}
+
+function ResumeLink({ href }) {
+  if (!href) return null;
+  return (
+    <a className="button secondary" href={href} target="_blank" rel="noopener noreferrer">
+      Resume
+    </a>
+  );
 }
 
 export default function PortfolioHome() {
@@ -415,7 +424,7 @@ export default function PortfolioHome() {
             <div className="hero-actions">
               {settings.showHire ? <a className="button" href={`mailto:${profile.email}`}>Hire me</a> : null}
               <a className="button secondary" href="#projects">View work</a>
-              {profile.resume_url ? <a className="button secondary" href={profile.resume_url}>Resume</a> : null}
+              <ResumeLink href={profile.resume_url} />
             </div>
           </div>
           {settings.showHeroImage ? (
@@ -522,7 +531,7 @@ function AtlasPortfolio({ data, groupedSkills, loading, mode, orderedSections, p
             <p className="atlas-tagline">{profile.tagline || 'Designed to read like a complete body of work, not a generic landing page.'}</p>
             <div className="atlas-actions">
               {settings.showHire ? <a className="button" href={`mailto:${profile.email}`}>Start a project</a> : null}
-              {profile.resume_url ? <a className="button secondary" href={profile.resume_url}>Resume</a> : null}
+              <ResumeLink href={profile.resume_url} />
             </div>
             <dl className="atlas-meta">
               <div>
@@ -636,7 +645,7 @@ function CinemaPortfolio({ data, loading, mode, orderedSections, profile, settin
             <div className="cinema-actions">
               {settings.showHire ? <a className="button" href={`mailto:${profile.email}`}>Book collaboration</a> : null}
               <a className="button secondary" href="#projects">Browse work</a>
-              {profile.resume_url ? <a className="button secondary" href={profile.resume_url}>Resume</a> : null}
+              <ResumeLink href={profile.resume_url} />
             </div>
           </div>
           <aside className="cinema-sidecard">
@@ -724,7 +733,7 @@ function LedgerPortfolio({ data, loading, mode, orderedSections, profile, settin
             </nav>
             <div className="ledger-sidebar-actions">
               {settings.showHire ? <a className="button" href={`mailto:${profile.email}`}>Contact</a> : null}
-              {profile.resume_url ? <a className="button secondary" href={profile.resume_url}>Resume</a> : null}
+              <ResumeLink href={profile.resume_url} />
             </div>
           </div>
         </aside>
@@ -783,7 +792,7 @@ function ExhibitPortfolio({ data, loading, mode, orderedSections, profile, setti
             <p className="exhibit-tagline">{profile.tagline || 'An exhibition-style portfolio with oversized feature panels and editorial notes.'}</p>
             <div className="exhibit-actions">
               {settings.showHire ? <a className="button" href={`mailto:${profile.email}`}>Start a conversation</a> : null}
-              {profile.resume_url ? <a className="button secondary" href={profile.resume_url}>Resume</a> : null}
+              <ResumeLink href={profile.resume_url} />
             </div>
           </div>
           <div className="exhibit-cover-note">
@@ -846,7 +855,7 @@ function MosaicPortfolio({ data, groupedSkills, loading, mode, orderedSections, 
             <p className="mosaic-tagline">{profile.tagline || 'A collage-like portfolio where each section feels like part of a curated wall.'}</p>
             <div className="mosaic-actions">
               {settings.showHire ? <a className="button" href={`mailto:${profile.email}`}>Hire me</a> : null}
-              {profile.resume_url ? <a className="button secondary" href={profile.resume_url}>Resume</a> : null}
+              <ResumeLink href={profile.resume_url} />
             </div>
           </div>
           <div className="mosaic-cover-notes">
@@ -908,7 +917,12 @@ function MosaicPortfolio({ data, groupedSkills, loading, mode, orderedSections, 
 
 function BriefingPortfolio({ data, loading, mode, orderedSections, profile, settings, showBackToTop, toggleMode }) {
   const featuredProject = data.projects?.[0] ?? null;
-  const briefingSummary = summarizeRichText(profile.bio || profile.tagline || '', 240);
+  const briefingHighlights = [
+    { label: 'Projects', value: data.projects?.length ?? 0 },
+    { label: 'Roles', value: data.experience?.length ?? 0 },
+    { label: 'Skills', value: data.skills?.length ?? 0 },
+    { label: 'Sections', value: orderedSections.length }
+  ];
 
   return (
     <div className={`portfolio-page portfolio-template-${settings.portfolioTemplate} portfolio-style-${settings.visualStyle} portfolio-bg-effect-${settings.backgroundEffect}`}>
@@ -927,11 +941,18 @@ function BriefingPortfolio({ data, loading, mode, orderedSections, profile, sett
             <p className="briefing-kicker">Briefing deck</p>
             <h1>{profile.name || 'Your Name'}</h1>
             <p className="briefing-tagline">{profile.tagline || 'A presentation-style portfolio built as a sequence of concise, readable project and profile slides.'}</p>
-            {briefingSummary ? <p className="briefing-summary">{briefingSummary}</p> : null}
+            <div className="briefing-highlights" aria-label="Portfolio summary">
+              {briefingHighlights.map((item) => (
+                <div key={item.label}>
+                  <strong>{String(item.value).padStart(2, '0')}</strong>
+                  <span>{item.label}</span>
+                </div>
+              ))}
+            </div>
             <div className="briefing-actions">
               {settings.showHire ? <a className="button" href={`mailto:${profile.email}`}>Request a brief</a> : null}
               <a className="button secondary" href="#briefing-slides">Open deck</a>
-              {profile.resume_url ? <a className="button secondary" href={profile.resume_url}>Resume</a> : null}
+              <ResumeLink href={profile.resume_url} />
             </div>
           </div>
           <aside className="briefing-agenda">
@@ -988,7 +1009,11 @@ function BriefingPortfolio({ data, loading, mode, orderedSections, profile, sett
 
 function FieldNotesPortfolio({ data, loading, mode, orderedSections, profile, settings, showBackToTop, showProjectsSection, toggleMode }) {
   const featuredProjects = data.projects?.slice(0, 5) ?? [];
-  const notesSummary = summarizeRichText(profile.bio || profile.tagline || '', 240);
+  const notesSignals = [
+    { label: 'Current role', value: data.experience?.[0]?.role || profile.availability_status || 'Available' },
+    { label: 'Featured work', value: featuredProjects[0]?.title || `${data.projects?.length ?? 0} projects` },
+    { label: 'Capability set', value: `${data.skills?.length ?? 0} skills` }
+  ];
 
   return (
     <div className={`portfolio-page portfolio-template-${settings.portfolioTemplate} portfolio-style-${settings.visualStyle} portfolio-bg-effect-${settings.backgroundEffect}`}>
@@ -1012,10 +1037,17 @@ function FieldNotesPortfolio({ data, loading, mode, orderedSections, profile, se
                 <p className="notes-tagline">{profile.tagline || 'A notebook-style portfolio that reads like a working record, not a gallery wall.'}</p>
               </div>
             </div>
-            {notesSummary ? <p className="notes-summary">{notesSummary}</p> : null}
+            <div className="notes-signals" aria-label="Portfolio snapshot">
+              {notesSignals.map((item) => (
+                <div key={item.label}>
+                  <span>{item.label}</span>
+                  <strong>{item.value}</strong>
+                </div>
+              ))}
+            </div>
             <div className="notes-actions">
               {settings.showHire ? <a className="button" href={`mailto:${profile.email}`}>Open conversation</a> : null}
-              {profile.resume_url ? <a className="button secondary" href={profile.resume_url}>Resume</a> : null}
+              <ResumeLink href={profile.resume_url} />
             </div>
           </article>
           <aside className="notes-sidecard">
@@ -1099,7 +1131,7 @@ function PanoramaPortfolio({ data, loading, mode, orderedSections, profile, sett
             <p className="panorama-tagline">{profile.tagline || 'A wide-format portfolio that unfolds as a sequence of immersive sections.'}</p>
             <div className="panorama-actions">
               {settings.showHire ? <a className="button" href={`mailto:${profile.email}`}>Start a project</a> : null}
-              {profile.resume_url ? <a className="button secondary" href={profile.resume_url}>Resume</a> : null}
+              <ResumeLink href={profile.resume_url} />
             </div>
           </div>
         </section>
@@ -1130,7 +1162,6 @@ function FolioPortfolio({ data, groupedSkills, loading, mode, orderedSections, p
   const recordCount = data.projects?.length ?? 0;
   const skillGroups = Object.entries(groupedSkills);
   const featuredRecord = data.projects?.[0] ?? null;
-  const archiveSummary = summarizeRichText(profile.bio || profile.tagline || '', 240);
   const activeSectionIndex = orderedSections.findIndex((section) => section.key === activeSection?.key);
   const activeSectionCount = activeSection ? getSectionCount(activeSection.key, data, groupedSkills, profile) : 0;
 
@@ -1163,7 +1194,6 @@ function FolioPortfolio({ data, groupedSkills, loading, mode, orderedSections, p
             ) : null}
             <h1>{profile.name || 'Your Name'}</h1>
             <p className="folio-tagline">{profile.tagline || 'A file-cabinet archive of work, capabilities, and professional record.'}</p>
-            {archiveSummary ? <p className="folio-summary">{archiveSummary}</p> : null}
           </div>
           <div className="folio-masthead-meta">
             <dl>
@@ -1174,7 +1204,7 @@ function FolioPortfolio({ data, groupedSkills, loading, mode, orderedSections, p
             </dl>
             <div className="folio-masthead-actions">
               {settings.showHire ? <a className="button" href={`mailto:${profile.email}`}>Open inquiry</a> : null}
-              {profile.resume_url ? <a className="button secondary" href={profile.resume_url}>Resume</a> : null}
+              <ResumeLink href={profile.resume_url} />
             </div>
           </div>
         </section>
@@ -1343,7 +1373,7 @@ function DispatchPortfolio({ data, loading, mode, orderedSections, profile, sett
               <div className="dispatch-front-actions">
                 {settings.showHire ? <a className="button" href={`mailto:${profile.email}`}>Commission work</a> : null}
                 <a className="button secondary" href="#dispatch-stories">Browse stories</a>
-                {profile.resume_url ? <a className="button secondary" href={profile.resume_url}>Resume</a> : null}
+                <ResumeLink href={profile.resume_url} />
               </div>
             </div>
             <div className="dispatch-front-sidebar">
@@ -1455,3 +1485,4 @@ function DispatchPortfolio({ data, loading, mode, orderedSections, profile, sett
     </div>
   );
 }
+
